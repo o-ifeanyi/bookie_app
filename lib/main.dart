@@ -1,7 +1,7 @@
 import 'package:bookie/models/provider.dart';
 import 'package:bookie/screens/home.dart';
-import 'package:bookie/screens/profile_screen.dart';
 import 'package:bookie/screens/registration_screen.dart';
+import 'package:bookie/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 void main() {
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
           routes: {
             MyHome.id: (context) => MyHome(),
             RegistrationScreen.id: (context) => RegistrationScreen(),
-            ProfileScreen.id: (context) => ProfileScreen(),
+            SettingsScreen.id: (context) => SettingsScreen(),
           },
         ),
     );

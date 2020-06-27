@@ -3,6 +3,7 @@ import 'package:bookie/models/error_handling.dart';
 import 'package:bookie/models/get_books.dart';
 import 'package:bookie/models/provider.dart';
 import 'package:bookie/screens/search_result_screen.dart';
+import 'package:bookie/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bookie/constants.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -107,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         });
       }
-      
+
       print('got books for $tag');
       int listLenght = 0;
       bookData['items'].forEach((book) => listLenght++);
@@ -215,77 +216,97 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       opacity: 0.0,
       isLoading: loading,
-      child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              height: 50,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-              margin: EdgeInsets.symmetric(horizontal: 5),
-              child: TextField(
-                controller: searchFeildController,
-                onChanged: (value) {
-                  searchInput = value;
-                },
-                decoration: kInputDecoration.copyWith(
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: DropdownButton(
-                      icon: Icon(Icons.unfold_more),
-                      value: dropdownValue,
-                      onChanged: (String newValue) {
-                        setState(() {
-                          dropdownValue = newValue;
-                        });
-                      },
-                      items: <String>['title', 'author', 'publ']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Home',
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingsScreen(),
                   ),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      if (dropdownValue == 'title' && searchInput != null) {
-                        showLoader();
-                        getBooksByTitle(searchInput);
-                      } else if (dropdownValue == 'author' &&
-                          searchInput != null) {
-                        showLoader();
-                        getBooksByAuthor(searchInput);
-                      } else if (dropdownValue == 'publ' &&
-                          searchInput != null) {
-                        showLoader();
-                        getBooksByPublisher(searchInput);
-                      }
-                    },
-                  ),
-                  hintText: 'Search by title or author',
-                ),
-              ),
-            ),
-            Consumer<ProviderClass>(
-              builder: (context, pageList, child) {
-                return Expanded(
-                  child: pageList.pageListWidget.isEmpty
-                      ? loadingPage
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: pageListNumber,
-                          itemBuilder: (contex, index) {
-                            return pageList.pageListWidget[index];
-                          },
-                        ),
                 );
               },
-            ),
-          ]),
+            )
+          ],
+        ),
+        body: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                height: 50,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                margin: EdgeInsets.symmetric(horizontal: 5),
+                child: TextField(
+                  controller: searchFeildController,
+                  onChanged: (value) {
+                    searchInput = value;
+                  },
+                  decoration: kInputDecoration.copyWith(
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: DropdownButton(
+                        icon: Icon(Icons.unfold_more),
+                        value: dropdownValue,
+                        onChanged: (String newValue) {
+                          setState(() {
+                            dropdownValue = newValue;
+                          });
+                        },
+                        items: <String>['title', 'author', 'publ']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        if (dropdownValue == 'title' && searchInput != null) {
+                          showLoader();
+                          getBooksByTitle(searchInput);
+                        } else if (dropdownValue == 'author' &&
+                            searchInput != null) {
+                          showLoader();
+                          getBooksByAuthor(searchInput);
+                        } else if (dropdownValue == 'publ' &&
+                            searchInput != null) {
+                          showLoader();
+                          getBooksByPublisher(searchInput);
+                        }
+                      },
+                    ),
+                    hintText: 'Search by title or author',
+                  ),
+                ),
+              ),
+              Consumer<ProviderClass>(
+                builder: (context, pageList, child) {
+                  return Expanded(
+                    child: pageList.pageListWidget.isEmpty
+                        ? loadingPage
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: pageListNumber,
+                            itemBuilder: (contex, index) {
+                              return pageList.pageListWidget[index];
+                            },
+                          ),
+                  );
+                },
+              ),
+            ]),
+      ),
     );
   }
 }
