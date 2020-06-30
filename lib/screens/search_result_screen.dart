@@ -17,6 +17,7 @@ class SearchResult extends StatelessWidget {
   static String title;
   static String publishDate;
   static String description;
+  static int listLenght;
 
   void displayResult(data, index) {
     var searchResultInfo = searchResult['items'][index]['volumeInfo'];
@@ -36,6 +37,8 @@ class SearchResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    listLenght = 0;
+    searchResult['items'].forEach((book) => listLenght++);
     var noResultPage = Container(
       height: 300,
       decoration: BoxDecoration(
@@ -59,19 +62,18 @@ class SearchResult extends StatelessWidget {
             height: 50,
           ),
           Text(
-              'No result for\n"$searchQuery"',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Source Sans Pro',
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: kLightBlack,
-              ),
+            'No result for\n"$searchQuery"',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Source Sans Pro',
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+              color: kLightBlack,
             ),
+          ),
         ],
       ),
     );
-    print('search result is $searchResult');
     return searchResult['totalItems'] == 0
         ? noResultPage
         : Scaffold(
@@ -93,6 +95,7 @@ class SearchResult extends StatelessWidget {
                   ),
                   Expanded(
                     child: ListView.builder(
+                      itemCount: listLenght,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         try {

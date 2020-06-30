@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:bookie/models/network_helper.dart';
 import 'package:bookie/models/secrets.dart';
+import 'package:http/http.dart' as http;
 
 class GetBooks {
   static String _apiKey = Secrets().apiKey;
@@ -22,8 +25,7 @@ class GetBooks {
   }
 
   Future<dynamic> getTagBooks(String tag) async {
-    String url =
-        '$volumesBaseURL?q=subject:$tag&orderBy=newest&key=$_apiKey';
+    String url = '$volumesBaseURL?q=subject:$tag&orderBy=newest&key=$_apiKey';
     NetWorkHelper netWorkHelper = NetWorkHelper(url);
     var newTagBooksData = await netWorkHelper.getData();
     return newTagBooksData;
@@ -51,5 +53,13 @@ class GetBooks {
     NetWorkHelper netWorkHelper = NetWorkHelper(url);
     var newPublisherBooksData = await netWorkHelper.getData();
     return newPublisherBooksData;
+  }
+
+  Future<dynamic> getBookShelf(String token) async {
+    String url =
+        'https://www.googleapis.com/books/v1/mylibrary/bookshelves?key=$_apiKey';
+    http.Response response =
+        await http.get(url, headers: {'Authorization': token});
+    return jsonDecode(response.body);
   }
 }

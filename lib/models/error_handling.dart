@@ -24,7 +24,7 @@ var socketExceptionPage = Center(
         'Oops',
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
-      Text('Please check your internrt connection!'),
+      Text('Please check your internet connection!'),
       Text('Tap to retry'),
     ],
   ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const Color kDarkBlue = Color(0xFF0A0E21);
-const Color kBlueAccent = Colors.blueAccent;
+const Color kBlueAccent = Color(0xFF2296F3);
 const Color kLightBlack = Colors.black45;
 const kInputDecoration = InputDecoration(
   hintText: '',

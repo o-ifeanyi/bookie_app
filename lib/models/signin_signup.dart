@@ -7,7 +7,7 @@ class SignInSignUp {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void handleEmailPasswordLogin(
+  Future<void> handleEmailPasswordLogin(
       BuildContext context, String email, String password) async {
     final user = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
@@ -20,7 +20,7 @@ class SignInSignUp {
     print('log in successful');
   }
 
-  void handleEmailPasswordSignUp(
+  Future<void> handleEmailPasswordSignUp(
       BuildContext context, String email, String password) async {
     final user = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
@@ -33,7 +33,7 @@ class SignInSignUp {
     print('sign up successful');
   }
 
-  void handleGoogleSignIn(BuildContext context) async {
+  Future<void> handleGoogleSignIn(BuildContext context) async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleUserAuth =
         await googleUser.authentication;
@@ -45,13 +45,7 @@ class SignInSignUp {
 
     final FirebaseUser user =
         (await _auth.signInWithCredential(credential)).user;
-
-    if (user != null) {
-      Navigator.pushNamed(
-        context,
-        MyHome.id,
-      );
-    }
+    
     print("signed in to google as" + user.displayName);
   }
 }

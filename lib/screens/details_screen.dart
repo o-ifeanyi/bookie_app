@@ -1,4 +1,6 @@
 import 'package:bookie/components/book_card.dart';
+import 'package:bookie/screens/book_reader.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:bookie/constants.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   var pageCount;
   String category;
   num rating;
+  String downloadLink;
   ScrollController scrollController;
   bool _dialVisible = true;
 
@@ -49,6 +52,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     categories = displayInfo['categories'] ?? 'Unavailable';
     pageCount = displayInfo['pageCount'] ?? 'Unavailable';
     rating = displayInfo['averageRating'];
+    downloadLink = data['accessInfo']['pdf']['downloadLink'];
   }
 
   String getCategory(var input) {
@@ -110,20 +114,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFFAFAFA),
-        elevation: 0.0,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back),
-          color: kLightBlack,
           iconSize: 30,
         ),
         actions: <Widget>[
           Icon(
             Icons.more_horiz,
-            color: kLightBlack,
             size: 30,
           ),
         ],
@@ -140,7 +140,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             SizedBox(height: 5),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(left: 15, right: 10),
@@ -154,45 +154,29 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   ),
                 ),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w900,
-                          fontFamily: 'Kaushan Script',
+                  child: Container(
+                    height: 260,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.w900,
+                            fontFamily: 'Kaushan Script',
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        'By ${author[0]}',
-                        style: kSearchResultTextStyle,
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        'Publishe Date: $publishDate',
-                        style: kSearchResultTextStyle,
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        'Publisher: $publisher',
-                        style: kSearchResultTextStyle,
-                      ),
-                      SizedBox(height: 5),
-                      getRating(rating),
-                      SizedBox(height: 5),
-                      Text(
-                        'Category: $category',
-                        style: kSearchResultTextStyle,
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        'Pages: $pageCount',
-                        style: kSearchResultTextStyle,
-                      ),
-                    ],
+                        SizedBox(height: 5),
+                        getRating(rating),
+                        SizedBox(height: 5),
+                        Text(
+                          'By ${author[0]}\nPublish Date: $publishDate\nPublisher: $publisher\nCategory: $category\nPages: $pageCount',
+                          overflow: TextOverflow.fade,
+                          style: kSearchResultTextStyle,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -227,6 +211,26 @@ class _DetailsScreenState extends State<DetailsScreen> {
         overlayOpacity: 0.5,
         animatedIcon: AnimatedIcons.menu_close,
         children: [
+          SpeedDialChild(
+            child: Icon(FlutterIcons.book_reader_faw5s),
+            label: downloadLink == null ? 'Unavailable' : 'Available',
+            labelStyle: TextStyle(color: Colors.white),
+            labelBackgroundColor:
+                downloadLink == null ? Colors.red : Colors.green,
+            onTap: () {
+              if (downloadLink != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookReader(
+                      url: downloadLink,
+                      title: title,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
           SpeedDialChild(
             child: Icon(Icons.library_add),
           ),
