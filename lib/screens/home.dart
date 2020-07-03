@@ -37,7 +37,10 @@ class _MyAppState extends State<MyHome> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: _screenOptions[_selectedIndex],
+        body: IndexedStack(
+          children: _screenOptions,
+          index: _selectedIndex,
+        ),
         bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
             buildBottomNavigationBarItem(title: 'Home', icon: Icons.home),

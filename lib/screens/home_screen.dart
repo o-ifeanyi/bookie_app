@@ -14,6 +14,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+   void setState(fn) {
+    if(mounted){
+      super.setState(fn);
+    }
+  }
   void isUserSignedIn() async {
     isSignedIn = (await _googleSignIn.isSignedIn());
     setState(() {});
@@ -86,32 +92,25 @@ class _HomeScreenState extends State<HomeScreen> {
     return Expanded(
       child: Column(
         children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
+          TabBar(
+            indicatorSize: TabBarIndicatorSize.label,
+            labelColor: kLightBlack,
+            labelStyle: activeStyle,
+            unselectedLabelStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            tabs: [
               Text(
                 'Recommended',
-                style: pageNumber == 0 ? activeStyle : null,
               ),
               Text(
                 'History',
-                style: pageNumber == 1 ? activeStyle : null,
               ),
             ],
           ),
-          Expanded(
-            child: PageView(
-              controller: PageController(
-                initialPage: pageNumber,
+          Expanded(child: TabBarView(children: pageViewWidgets)
               ),
-              children: pageViewWidgets,
-              onPageChanged: (int index) {
-                setState(() {});
-                pageNumber = index;
-                print(pageNumber);
-              },
-            ),
-          ),
         ],
       ),
     );
@@ -162,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
               trailing: accessGranted
                   ? Icon(Icons.check, color: Colors.green)
                   : Icon(Icons.cancel, color: Colors.red),
-              onTap: () async{
+              onTap: () async {
                 try {
                   GetToken.token();
                 } catch (e) {
@@ -176,8 +175,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  int pageNumber = 0;
-
   @override
   void initState() {
     super.initState();
@@ -186,41 +183,44 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SettingsScreen(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Container(
-        padding: EdgeInsets.only(left: 15, right: 15, top: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Continue reading',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: kLightBlack,
-              ),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Home'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingsScreen(),
+                  ),
+                );
+              },
             ),
-            SizedBox(height: 5),
-            readingNow != null ? continueReading() : continueReadingNull(),
-            SizedBox(height: 5),
-            accessGranted ? recommended() : recommendedNull(context),
           ],
+        ),
+        body: Container(
+          padding: EdgeInsets.only(left: 15, right: 15, top: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                'Continue reading',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: kLightBlack,
+                ),
+              ),
+              SizedBox(height: 5),
+              readingNow != null ? continueReading() : continueReadingNull(),
+              SizedBox(height: 5),
+              accessGranted ? recommended() : recommendedNull(context),
+            ],
+          ),
         ),
       ),
     );

@@ -1,14 +1,14 @@
-import 'package:bookie/components/book_card.dart';
 import 'package:bookie/models/error_handling.dart';
 import 'package:bookie/models/get_books.dart';
 import 'package:bookie/models/provider.dart';
-import 'package:bookie/screens/search_result_screen.dart';
 import 'package:bookie/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bookie/constants.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:bookie/screens/details_screen.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:bookie/screens/view_more.dart';
+import 'package:bookie/screens/search_screen.dart';
+import 'package:bookie/components/list_builder.dart';
 
 import 'package:provider/provider.dart';
 
@@ -18,6 +18,12 @@ class StoreScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<StoreScreen> {
+  @override
+   void setState(fn) {
+    if(mounted){
+      super.setState(fn);
+    }
+  }
   GetBooks getBooks = GetBooks();
   final Map<String, String> bookTags = {
     'Romance': 'Feel the passion',
@@ -35,75 +41,35 @@ class _HomeScreenState extends State<StoreScreen> {
   };
   num pageListNumber = 0;
   bool loading = false;
-  var titleBooksData;
-  var authorBooksData;
-  var publisherBooksData;
-  var imagePlaceHolder =
-      'https://lh3.googleusercontent.com/proxy/u8TYJjSEp6IjX6HF2BqR2PmM68Zf6uG-l_DamX5vNfO-euliRz4vfeIJvHlp6CZ1B0EGCW3SXBTEyLjdu2poFM16m0Dr1rMt';
-  String dropdownValue = 'title';
-  String searchInput;
-  final searchFeildController = TextEditingController();
-
-  void getBooksByTitle(title) async {
-    titleBooksData = await getBooks.getTitleBooks(title);
+  bool pageIsEmpty = true;
+      
+  //loops through the bookTag list
+  //perfoms an API call for each book tag using the "subject" parameter
+  //adds a widget that displays this data to the provider class so as to update the screen
+  void buildPageList(context) async {
     setState(() {
-      dismissLoader();
-      goToSearchResult(titleBooksData, title);
-    });
-  }
-
-  void getBooksByAuthor(author) async {
-    authorBooksData = await getBooks.getAuthorBooks(author);
-    setState(() {
-      dismissLoader();
-      goToSearchResult(authorBooksData, author);
-    });
-  }
-
-  void getBooksByPublisher(publisher) async {
-    publisherBooksData = await getBooks.getPublisherBooks(publisher);
-    setState(() {
-      dismissLoader();
-      goToSearchResult(publisherBooksData, publisher);
-    });
-  }
-
-  void goToSearchResult(data, searchQuery) {
-    if (data != null) {
-      searchFeildController.clear();
-      showModalBottomSheet(
-        enableDrag: true,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        context: (context),
-        builder: (context) => SearchResult(
-          searchResult: data,
-          searchQuery: searchQuery,
+      pageIsEmpty = true;
+      loadingPage = Container(
+        child: Center(
+          child: GlowingProgressIndicator(
+            child: Icon(Icons.book, color: kBlueAccent, size: 50),
+          ),
         ),
       );
-    }
-  }
-
-  void buildPageList() async {
+    });
     for (String tag in bookTags.keys) {
       var bookData;
       try {
-        setState(() {
-          loadingPage = Container(
-            child: Center(
-              child: GlowingProgressIndicator(
-                child: Icon(Icons.book, color: kBlueAccent, size: 50),
-              ),
-            ),
-          );
-        });
         bookData = await getBooks.getTagBooks(tag);
+        setState(() {
+          pageIsEmpty = false;
+        });
       } catch (SocketException) {
         setState(() {
           ErrorHandling.handleSocketException(context);
           loadingPage = Container(
             child: ErrorPage(() {
-              buildPageList();
+              buildPageList(context);
             }),
           );
         });
@@ -135,47 +101,25 @@ class _HomeScreenState extends State<StoreScreen> {
                         Icons.arrow_forward,
                         color: kLightBlack,
                       ),
-                      onPressed: () {})
+                      //pass the tag and data gotten for that tag to view_more page
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ViewMore(
+                              tag: tag,
+                              bookData: bookData,
+                            ),
+                          ),
+                        );
+                      }),
                 ],
               ),
             ),
             Container(
               height: 180,
               padding: EdgeInsets.only(left: 12),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  var imageLink;
-                  try {
-                    imageLink = bookData['items'][index]['volumeInfo']
-                        ['imageLinks']['smallThumbnail'];
-                  } catch (e) {
-                    print('error with list image: $e');
-                    if (imageLink == null) {
-                      imageLink = imagePlaceHolder;
-                    }
-                  }
-
-                  return BookCard(
-                    imgHeight: 180,
-                    imgWidth: 130,
-                    imageLink: imageLink,
-                    onPressed: () {
-                      var displayBook = bookData['items'][index];
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailsScreen(
-                            bookToDisplay: displayBook,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-                itemCount: listLenght,
-                scrollDirection: Axis.horizontal,
-              ),
+              child: ListBuilder(data: bookData, listLenght: listLenght),
             ),
           ],
         ),
@@ -183,11 +127,11 @@ class _HomeScreenState extends State<StoreScreen> {
       pageListNumber++;
     }
   }
-  
+
   @override
   void initState() {
     super.initState();
-    buildPageList();
+    buildPageList(context);
   }
 
   void showLoader() {
@@ -225,6 +169,19 @@ class _HomeScreenState extends State<StoreScreen> {
           ),
           actions: <Widget>[
             IconButton(
+              icon: Icon(
+                Icons.search,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SearchScreen(),
+                  ),
+                );
+              },
+            ),
+            IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {
                 Navigator.push(
@@ -241,64 +198,10 @@ class _HomeScreenState extends State<StoreScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(
-                height: 50,
-                padding: EdgeInsets.symmetric(vertical: 2),
-                margin: EdgeInsets.symmetric(horizontal: 10),
-                child: TextField(
-                  controller: searchFeildController,
-                  onChanged: (value) {
-                    searchInput = value;
-                  },
-                  decoration: kInputDecoration.copyWith(
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: DropdownButton(
-                        icon: Icon(Icons.unfold_more),
-                        value: dropdownValue,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            dropdownValue = newValue;
-                          });
-                        },
-                        items: <String>['title', 'author', 'publ']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    suffixIcon: Container(
-                      color: kBlueAccent,
-                      child: IconButton(
-                        icon: Icon(Icons.search, color: Colors.white,),
-                        onPressed: () {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                          if (dropdownValue == 'title' && searchInput != null) {
-                            showLoader();
-                            getBooksByTitle(searchInput);
-                          } else if (dropdownValue == 'author' &&
-                              searchInput != null) {
-                            showLoader();
-                            getBooksByAuthor(searchInput);
-                          } else if (dropdownValue == 'publ' &&
-                              searchInput != null) {
-                            showLoader();
-                            getBooksByPublisher(searchInput);
-                          }
-                        },
-                      ),
-                    ),
-                    hintText: 'Search by title or author',
-                  ),
-                ),
-              ),
               Consumer<ProviderClass>(
                 builder: (context, pageList, child) {
                   return Expanded(
-                    child: pageList.pageListWidget.isEmpty
+                    child: pageIsEmpty
                         ? loadingPage
                         : ListView.builder(
                             shrinkWrap: true,
@@ -315,3 +218,5 @@ class _HomeScreenState extends State<StoreScreen> {
     );
   }
 }
+
+

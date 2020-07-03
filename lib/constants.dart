@@ -19,8 +19,11 @@ const kInputDecoration = InputDecoration(
   ),
 );
 
-const kSearchResultTextStyle = TextStyle(
-  fontSize: 16,
-  fontWeight: FontWeight.w300,
-  fontFamily: 'Source Sans Pro'
+const kCursiveHeading = TextStyle(
+  fontSize: 25,
+  fontWeight: FontWeight.w900,
+  fontFamily: 'Kaushan Script',
 );
+
+const kSearchResultTextStyle = TextStyle(
+    fontSize: 16, fontWeight: FontWeight.w300, fontFamily: 'Source Sans Pro');

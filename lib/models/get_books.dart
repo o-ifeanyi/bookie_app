@@ -31,6 +31,13 @@ class GetBooks {
     return newTagBooksData;
   }
 
+  Future<dynamic> getFreeBooks(String tag) async {
+    String url = '$volumesBaseURL?q=subject:$tag&filter=free-ebooks&key=$_apiKey';
+    NetWorkHelper netWorkHelper = NetWorkHelper(url);
+    var freeBooksData = await netWorkHelper.getData();
+    return freeBooksData;
+  }
+
   Future<dynamic> getTitleBooks(String title) async {
     String url =
         '$volumesBaseURL?q=intitle:$title&orderBy=relevance&key=$_apiKey';

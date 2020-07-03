@@ -1,10 +1,13 @@
 import 'package:bookie/components/book_card.dart';
+import 'package:bookie/components/list_builder.dart';
+import 'package:bookie/models/get_books.dart';
 import 'package:bookie/screens/book_reader.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:bookie/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 
 class DetailsScreen extends StatefulWidget {
   static String id = 'detailScreen';
@@ -17,6 +20,12 @@ class DetailsScreen extends StatefulWidget {
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
+  @override
+   void setState(fn) {
+    if(mounted){
+      super.setState(fn);
+    }
+  }
   final imagePlaceHolder =
       'https://lh3.googleusercontent.com/proxy/u8TYJjSEp6IjX6HF2BqR2PmM68Zf6uG-l_DamX5vNfO-euliRz4vfeIJvHlp6CZ1B0EGCW3SXBTEyLjdu2poFM16m0Dr1rMt';
   String imageLink;
@@ -31,7 +40,25 @@ class _DetailsScreenState extends State<DetailsScreen> {
   num rating;
   String downloadLink;
   ScrollController scrollController;
+  int descriptonMaxLines = 10;
   bool _dialVisible = true;
+  dynamic moreFromAuthorData;
+  int listLenght = 0;
+  String seeMore = 'View more';
+
+  void getMoreData() async {
+    try {
+      var moreAuthor = author;
+      moreFromAuthorData = await GetBooks().getAuthorBooks(moreAuthor);
+      print(moreFromAuthorData);
+      setState(() {});
+      if (moreFromAuthorData['items'] != null) {
+        moreFromAuthorData['items'].forEach((book) => listLenght++);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
 
   void displayResult(data) {
     var displayInfo = data['volumeInfo'];
@@ -43,8 +70,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
       }
       print(e);
     }
-
     author = displayInfo['authors'] ?? 'Unavailable';
+    author = author.runtimeType == [].runtimeType ? author[0] : author;
     title = displayInfo['title'] ?? 'Unavailable';
     publishDate = displayInfo['publishedDate'] ?? 'Unavailable';
     publisher = displayInfo['publisher'] ?? 'Unavailable';
@@ -97,15 +124,25 @@ class _DetailsScreenState extends State<DetailsScreen> {
     });
   }
 
+  @override
   void initState() {
     super.initState();
+
     displayResult(widget.bookToDisplay);
+
     category = getCategory(categories);
     scrollController = ScrollController()
       ..addListener(() {
         setDailVisible(scrollController.position.userScrollDirection ==
             ScrollDirection.forward);
       });
+    getMoreData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    moreFromAuthorData = null;
   }
 
   IconData addBook = Icons.library_add;
@@ -128,22 +165,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ),
         ],
       ),
-      backgroundColor: Color(0xFFFAFAFA),
       body: Container(
+        padding: const EdgeInsets.only(left: 15, right: 10),
         child: ListView(
           controller: scrollController,
           children: <Widget>[
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: <Widget>[],
-            // ),
             SizedBox(height: 5),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 10),
+                  padding: const EdgeInsets.only(right: 10),
                   child: Hero(
                     tag: 'bookImage',
                     child: BookCard(
@@ -161,17 +194,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       children: <Widget>[
                         Text(
                           title,
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.w900,
-                            fontFamily: 'Kaushan Script',
-                          ),
+                          style: kCursiveHeading,
                         ),
                         SizedBox(height: 5),
                         getRating(rating),
                         SizedBox(height: 5),
                         Text(
-                          'By ${author[0]}\nPublish Date: $publishDate\nPublisher: $publisher\nCategory: $category\nPages: $pageCount',
+                          'By $author\nPublish Date: $publishDate\nPublisher: $publisher\nCategory: $category\nPages: $pageCount',
                           overflow: TextOverflow.fade,
                           style: kSearchResultTextStyle,
                         ),
@@ -186,23 +215,54 @@ class _DetailsScreenState extends State<DetailsScreen> {
             Text(
               'About This Book',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Kaushan Script',
-              ),
+              style: kCursiveHeading,
             ),
             SizedBox(height: 5),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                description,
-                textAlign: TextAlign.center,
-                softWrap: true,
-                overflow: TextOverflow.fade,
-                style: TextStyle(fontFamily: 'Source Sans Pro', fontSize: 16),
-              ),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              maxLines: descriptonMaxLines,
+              softWrap: true,
+              overflow: TextOverflow.fade,
+              style: TextStyle(fontFamily: 'Source Sans Pro', fontSize: 16),
             ),
+            SizedBox(height: 5),
+            GestureDetector(
+              child: Text(
+                seeMore,
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  color: kBlueAccent,
+                ),
+              ),
+              onTap: () {
+                setState(() {
+                  seeMore == 'View more'
+                      ? seeMore = 'View less'
+                      : seeMore = 'View more';
+                  descriptonMaxLines == 10
+                      ? descriptonMaxLines = null
+                      : descriptonMaxLines = 10;
+                });
+              },
+            ),
+            SizedBox(height: 5),
+            Text(
+              'More from the author',
+              textAlign: TextAlign.start,
+              style: kCursiveHeading,
+            ),
+            SizedBox(height: 5),
+            Container(
+                height: 180,
+                child: moreFromAuthorData == null
+                    ? Center(
+                        child: GlowingProgressIndicator(
+                          child: Icon(Icons.book, color: kBlueAccent, size: 30),
+                        ),
+                      )
+                    : ListBuilder(
+                        data: moreFromAuthorData, listLenght: listLenght)),
           ],
         ),
       ),
