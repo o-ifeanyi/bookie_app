@@ -14,29 +14,31 @@ class BookCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: kLightBlack,
+      child: Card(
+        elevation: 4.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(10.0),
+          ),
         ),
-        
-        height: imgHeight,
-        width: imgWidth,
-        margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-                  child: OctoImage(
-            image: NetworkImage(imageLink),
-            fadeInDuration: Duration(seconds: 1),
-            placeholderBuilder: (context) => GlowingProgressIndicator(
-             child: Icon(
-                Icons.book,
-                size: 50,
-                color: Colors.white,
+        child: Container(
+          height: imgHeight,
+          width: imgWidth,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: OctoImage(
+              image: NetworkImage(imageLink),
+              fadeInDuration: Duration(seconds: 1),
+              placeholderBuilder: (context) => GlowingProgressIndicator(
+                child: Icon(
+                  Icons.book,
+                  size: 40,
+                  color: kBlueAccent,
+                ),
               ),
+              errorBuilder: OctoError.icon(color: Colors.red),
+              fit: BoxFit.fill,
             ),
-            errorBuilder: OctoError.icon(color: Colors.red),
-            fit: BoxFit.fill,
           ),
         ),
       ),

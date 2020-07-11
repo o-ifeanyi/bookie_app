@@ -114,7 +114,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         color: kLightBlack,
                         width: 1,
                       ),
-                      borderRadius: BorderRadius.circular(20)),
+                      borderRadius: BorderRadius.circular(30)),
                   child: Row(
                     children: <Widget>[
                       IconButton(
@@ -168,8 +168,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         decoration: BoxDecoration(
                           color: kBlueAccent,
                           borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(20),
-                            bottomRight: Radius.circular(20),
+                            topRight: Radius.circular(30),
+                            bottomRight: Radius.circular(30),
                           ),
                         ),
                         child: IconButton(

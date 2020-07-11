@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bookie/components/book_card.dart';
-import 'package:bookie/constants.dart';
 import 'package:bookie/screens/details_screen.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 class GridBuilder extends StatelessWidget {
   GridBuilder({
@@ -32,7 +30,7 @@ class GridBuilder extends StatelessWidget {
           try {
             title =
                 data['items'][index]['volumeInfo']['title'] ?? 'Unavailable';
-            link = data['items'][index]['accessInfo']['pdf']['downloadLink'];
+            link = data['items'][index]['accessInfo']['epub']['downloadLink'];
             imageLink = data['items'][index]['volumeInfo']['imageLinks']
                 ['smallThumbnail'];
           } catch (e) {
@@ -75,8 +73,8 @@ class GridBuilder extends StatelessWidget {
               Row(
                 children: <Widget>[
                   Icon(
-                    FlutterIcons.book_reader_faw5s,
-                    color: link == null ? kBlueAccent : Colors.green,
+                    Icons.file_download,
+                    color: link == null ? Colors.red : Colors.green,
                   ),
                   SizedBox(width: 10),
                   Text(link != null ? 'Available' : 'Unavailable'),

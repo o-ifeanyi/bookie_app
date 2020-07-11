@@ -1,5 +1,5 @@
 import 'package:bookie/constants.dart';
-import 'package:bookie/models/get_books.dart';
+import 'package:bookie/models/free_books.dart';
 import 'package:bookie/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -15,11 +15,12 @@ class ViewMore extends StatefulWidget {
 
 class _ViewMoreState extends State<ViewMore> {
   @override
-   void setState(fn) {
-    if(mounted){
+  void setState(fn) {
+    if (mounted) {
       super.setState(fn);
     }
   }
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   var newBooksData;
   var freeBooksData;
@@ -29,8 +30,7 @@ class _ViewMoreState extends State<ViewMore> {
 
   void getFreeBooks(String tag) async {
     try {
-      freeBooksData = await GetBooks().getFreeBooks(tag);
-      print(freeBooksData);
+      freeBooksData = await FreeBooksApi.getCategory(tag);
       setState(() {});
       if (freeBooksData['items'] != null) {
         freeBooksData['items'].forEach((book) => freeGridLenght++);
@@ -64,7 +64,10 @@ class _ViewMoreState extends State<ViewMore> {
     List<Widget> pageWidgets = [
       Container(
         padding: EdgeInsets.only(top: 10, left: 10, right: 10),
-        child: GridBuilder(data: newBooksData, lenght: newGridLenght,),
+        child: GridBuilder(
+          data: newBooksData,
+          lenght: newGridLenght,
+        ),
       ),
       Container(
         padding: EdgeInsets.only(top: 10, left: 10, right: 10),
@@ -76,7 +79,10 @@ class _ViewMoreState extends State<ViewMore> {
               )
             : Container(
                 child: displayText == ''
-                    ? GridBuilder(data: freeBooksData, lenght: freeGridLenght,)
+                    ? GridBuilder(
+                        data: freeBooksData,
+                        lenght: freeGridLenght,
+                      )
                     : Center(
                         child: Text(displayText),
                       )),
@@ -94,10 +100,11 @@ class _ViewMoreState extends State<ViewMore> {
                   Icons.search,
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    SearchScreen.id,
-                  );
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SearchScreen(),
+                      ));
                 })
           ],
           bottom: TabBar(tabs: [
@@ -124,5 +131,3 @@ class _ViewMoreState extends State<ViewMore> {
     );
   }
 }
-
-

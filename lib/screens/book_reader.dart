@@ -1,60 +1,72 @@
-import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
+import 'dart:typed_data';
+import 'package:bookie/constants.dart';
+import 'package:epub_view/epub_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:progress_indicators/progress_indicators.dart';
+import 'dart:io';
 
 class BookReader extends StatefulWidget {
-  static String id = 'bookReader';
-  final String url;
-  final String title;
-  BookReader({this.url, this.title});
+  final bookPath;
+  BookReader({this.bookPath});
   @override
   _BookReaderState createState() => _BookReaderState();
 }
 
 class _BookReaderState extends State<BookReader> {
-  var book = false;
-  bool isLoading = true;
-  PDFDocument document;
-  void reader() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      document = await PDFDocument.fromURL(widget.url);
-      book = true;
-    } catch (e) {
-      debugPrint(e.toString());
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
     }
   }
 
+  EpubController _epubController;
+
   @override
   void initState() {
+    _epubController = EpubController(
+      // Future<Uint8List>
+      data: loadBook(widget.bookPath),
+      // or pure Uint8List
+      // document: EpubReader.readBook(data),
+    );
     super.initState();
-    reader();
+  }
+
+  Future<Uint8List> loadBook(var path) async {
+    var book = File(path);
+    return book.readAsBytesSync();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        // Show actual chapter name
+        title: EpubActualChapter(
+          controller: _epubController,
+          builder: (chapterValue) => Text(
+            'Chapter ${chapterValue.chapter.Title ?? ''}',
+            textAlign: TextAlign.start,
+          ),
+        ),
       ),
-      body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Container(
-              child: book
-                  ? PDFViewer(
-                      document: document,
-                    )
-                  : Center(
-                      child: Text('Try again later'),
-                    ),
+      // Show table of contents
+      drawer: SafeArea(
+        child: Drawer(
+          child: EpubReaderTableOfContents(
+            loader: GlowingProgressIndicator(
+              child: Icon(Icons.book, size: 40, color: kBlueAccent),
             ),
+            controller: _epubController,
+          ),
+        ),
+      ),
+      // Show epub document
+      body: EpubView(
+        controller: _epubController,
+      ),
     );
   }
 }

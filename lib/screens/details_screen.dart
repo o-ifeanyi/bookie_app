@@ -2,8 +2,11 @@ import 'package:bookie/components/book_card.dart';
 import 'package:bookie/components/list_builder.dart';
 import 'package:bookie/models/get_books.dart';
 import 'package:bookie/screens/book_reader.dart';
+import 'package:bookie/screens/download_screen.dart';
+// import 'package:epub_kitty/epub_kitty.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:bookie/models/download_helper.dart';
 import 'package:bookie/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -21,14 +24,18 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   @override
-   void setState(fn) {
-    if(mounted){
+  void setState(fn) {
+    if (mounted) {
       super.setState(fn);
     }
   }
+
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  var downloadDB = DownloadsDB();
   final imagePlaceHolder =
       'https://lh3.googleusercontent.com/proxy/u8TYJjSEp6IjX6HF2BqR2PmM68Zf6uG-l_DamX5vNfO-euliRz4vfeIJvHlp6CZ1B0EGCW3SXBTEyLjdu2poFM16m0Dr1rMt';
   String imageLink;
+  var id;
   var author; //some come as single strings and not list
   String title;
   String publishDate;
@@ -45,12 +52,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
   dynamic moreFromAuthorData;
   int listLenght = 0;
   String seeMore = 'View more';
+  bool bookIsDownloaded = false;
+  var displayBookDatabase;
 
   void getMoreData() async {
     try {
       var moreAuthor = author;
       moreFromAuthorData = await GetBooks().getAuthorBooks(moreAuthor);
-      print(moreFromAuthorData);
       setState(() {});
       if (moreFromAuthorData['items'] != null) {
         moreFromAuthorData['items'].forEach((book) => listLenght++);
@@ -70,6 +78,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       }
       print(e);
     }
+    id = data['id'];
     author = displayInfo['authors'] ?? 'Unavailable';
     author = author.runtimeType == [].runtimeType ? author[0] : author;
     title = displayInfo['title'] ?? 'Unavailable';
@@ -79,7 +88,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
     categories = displayInfo['categories'] ?? 'Unavailable';
     pageCount = displayInfo['pageCount'] ?? 'Unavailable';
     rating = displayInfo['averageRating'];
-    downloadLink = data['accessInfo']['pdf']['downloadLink'];
+    downloadLink = data['accessInfo']['epub']['downloadLink'];
+  }
+
+  void isAlreadyDownloaded() async {
+    displayBookDatabase = await downloadDB.check({'id': title});
+    print('its already downloaded: ${!displayBookDatabase.isEmpty}');
+    if (displayBookDatabase.isNotEmpty) {
+      bookIsDownloaded = true;
+    } else {
+      bookIsDownloaded = false;
+    }
+    setState(() {});
   }
 
   String getCategory(var input) {
@@ -118,6 +138,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
   }
 
+  void openBook(var path) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => BookReader(
+                bookPath: path,
+              )),
+    );
+  }
+
   void setDailVisible(bool value) {
     setState(() {
       _dialVisible = value;
@@ -129,7 +159,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     super.initState();
 
     displayResult(widget.bookToDisplay);
-
+    isAlreadyDownloaded();
     category = getCategory(categories);
     scrollController = ScrollController()
       ..addListener(() {
@@ -143,6 +173,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
   void dispose() {
     super.dispose();
     moreFromAuthorData = null;
+    displayBookDatabase = null;
+    bookIsDownloaded = false;
   }
 
   IconData addBook = Icons.library_add;
@@ -150,6 +182,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
@@ -210,7 +243,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 ),
               ],
             ),
-
             SizedBox(height: 5),
             Text(
               'About This Book',
@@ -271,26 +303,72 @@ class _DetailsScreenState extends State<DetailsScreen> {
         overlayOpacity: 0.5,
         animatedIcon: AnimatedIcons.menu_close,
         children: [
-          SpeedDialChild(
-            child: Icon(FlutterIcons.book_reader_faw5s),
-            label: downloadLink == null ? 'Unavailable' : 'Available',
-            labelStyle: TextStyle(color: Colors.white),
-            labelBackgroundColor:
-                downloadLink == null ? Colors.red : Colors.green,
-            onTap: () {
-              if (downloadLink != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BookReader(
-                      url: downloadLink,
-                      title: title,
-                    ),
-                  ),
-                );
-              }
-            },
-          ),
+          bookIsDownloaded
+              ? SpeedDialChild(
+                  child: Icon(FlutterIcons.book_reader_faw5s),
+                  onTap: () async{
+                    var path = await displayBookDatabase[0]['path'];
+                    print('path is $path');
+                    openBook(path);
+                    // EpubKitty.setConfig(
+                    //     'androidBook', '#06d6a7', 'vertical', true);
+                    // EpubKitty.open(path);
+                  })
+              : SpeedDialChild(
+                  backgroundColor:
+                      downloadLink == null ? Colors.red : Colors.green,
+                  child: Icon(Icons.file_download),
+                  onTap: () async {
+                    if (downloadLink != null) {
+                      bool downloaded = await (showModalBottomSheet(
+                        isScrollControlled: false,
+                        isDismissible: false,
+                        context: context,
+                        builder: (context) => DownloadScreen(
+                          url: downloadLink,
+                          bookInfo: widget.bookToDisplay,
+                        ),
+                      ));
+                      if (downloaded) {
+                        print('this is what i got back: $downloaded');
+                        setState(() {
+                          bookIsDownloaded = true;
+                        });
+                        _scaffoldKey.currentState.showSnackBar(
+                          SnackBar(
+                            duration: Duration(seconds: 5),
+                            backgroundColor: Colors.green,
+                            content: Text('Download successful'),
+                            action: SnackBarAction(
+                              textColor: Colors.white,
+                              label: 'Open',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                      } else {
+                        _scaffoldKey.currentState.showSnackBar(
+                          SnackBar(
+                            duration: Duration(seconds: 5),
+                            backgroundColor: Colors.red,
+                            content: Text('Could not download'),
+                            action: SnackBarAction(
+                              textColor: Colors.white,
+                              label: 'Try again',
+                              onPressed: () {},
+                            ),
+                          ),
+                        );
+                      }
+                    } else {
+                      _scaffoldKey.currentState.showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text('Unavailable for download'),
+                        ),
+                      );
+                    }
+                  }),
           SpeedDialChild(
             child: Icon(Icons.library_add),
           ),
