@@ -151,7 +151,7 @@ class _HomeScreenState extends State<StoreScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Store',
+          'Explore',
         ),
         actions: <Widget>[
           IconButton(

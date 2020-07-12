@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'package:bookie/constants.dart';
 import 'package:bookie/models/download_helper.dart';
+import 'package:bookie/models/provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'dart:math';
+
+import 'package:provider/provider.dart';
 
 class DownloadScreen extends StatefulWidget {
   final url;
@@ -20,7 +23,7 @@ class DownloadScreen extends StatefulWidget {
 
 class _DownloadScreenState extends State<DownloadScreen> {
   Dio dio = Dio();
-  var downloadDB = DownloadsDB();
+  // var downloadDB = DownloadsDB();
   String bookId;
   String downloadProgress = '0';
   int downloadedBytes = 0;
@@ -80,10 +83,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 Navigator.pop(context, false);
                 print('Redirecting to captcha');
               }
-
-              if (downloadedBytes == totalBytes) {
-                Navigator.pop(context, true);
-              }
             },
           )
           .catchError(
@@ -95,7 +94,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
           .then((value) async {
             var downloadSize = formatBytes(totalBytes, 1);
             if (value != null) {
-              await downloadDB.add(
+              await Provider.of<ProviderClass>(context, listen: false).addToDataBase(
                 {
                   'id': bookId,
                   'path': path,
@@ -103,6 +102,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   'bookInfo': widget.bookInfo,
                 },
               );
+              Navigator.pop(context, true);
             }
           });
     } else {
@@ -136,61 +136,3 @@ class _DownloadScreenState extends State<DownloadScreen> {
     );
   }
 }
-
-// Future downloadFile(BuildContext context, String url, String filename) async {
-//   PermissionStatus permission = await PermissionHandler()
-//       .checkPermissionStatus(PermissionGroup.storage);
-
-//   if (permission != PermissionStatus.granted) {
-//     await PermissionHandler().requestPermissions([PermissionGroup.storage]);
-//     startDownload(context, url, filename);
-//   } else {
-//     startDownload(context, url, filename);
-//   }
-// }
-
-// startDownload(BuildContext context, String url, String filename) async {
-//   Directory appDirectory = Platform.isAndroid
-//       ? await getExternalStorageDirectory()
-//       : await getApplicationSupportDirectory();
-//   if (Platform.isAndroid) {
-//     Directory(appDirectory.path.split('Android')[0] + '${Constants.appName}')
-//         .createSync();
-//   }
-
-//   String path = Platform.isIOS
-//       ? appDirectory.path + '/$filename.epub'
-//       : appDirectory.path.split('Android')[0] +
-//           '${Constants.appName}/$filename.epub';
-//   print(path);
-//   File file = File(path);
-//   if (!await file.exists()) {
-//     await file.create();
-//   } else {
-//     await file.delete();
-//     await file.create();
-//   }
-
-//   showDialog(
-//     barrierDismissible: false,
-//     context: context,
-//     builder: (context) => DownloadAlert(
-//       url: url,
-//       path: path,
-//     ),
-//   ).then((v) {
-//     // When the download finishes, we then add the book
-//     // to our local database
-//     if (v != null) {
-//       addDownload(
-//         {
-//           'id': entry.published.t,
-//           'path': path,
-//           'image': '${entry.link[1].href}',
-//           'size': v,
-//           'name': entry.title.t,
-//         },
-//       );
-//     }
-//   });
-// }

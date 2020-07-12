@@ -45,7 +45,7 @@ class _MyAppState extends State<MyHome> {
           items: <BottomNavigationBarItem>[
             buildBottomNavigationBarItem(title: 'Home', icon: Icons.home),
             buildBottomNavigationBarItem(
-                title: 'Store', icon: Icons.shopping_cart),
+                title: 'Explore', icon: Icons.explore),
             buildBottomNavigationBarItem(
                 title: 'Profile', icon: Icons.person),
           ],

@@ -1,16 +1,16 @@
 import 'package:bookie/components/book_card.dart';
 import 'package:bookie/components/list_builder.dart';
 import 'package:bookie/models/get_books.dart';
+import 'package:bookie/models/provider.dart';
 import 'package:bookie/screens/book_reader.dart';
 import 'package:bookie/screens/download_screen.dart';
-// import 'package:epub_kitty/epub_kitty.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:bookie/models/download_helper.dart';
 import 'package:bookie/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:provider/provider.dart';
 
 class DetailsScreen extends StatefulWidget {
   static String id = 'detailScreen';
@@ -31,7 +31,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  var downloadDB = DownloadsDB();
+  // var downloadDB = DownloadsDB();
   final imagePlaceHolder =
       'https://lh3.googleusercontent.com/proxy/u8TYJjSEp6IjX6HF2BqR2PmM68Zf6uG-l_DamX5vNfO-euliRz4vfeIJvHlp6CZ1B0EGCW3SXBTEyLjdu2poFM16m0Dr1rMt';
   String imageLink;
@@ -92,14 +92,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   void isAlreadyDownloaded() async {
-    displayBookDatabase = await downloadDB.check({'id': title});
-    print('its already downloaded: ${!displayBookDatabase.isEmpty}');
-    if (displayBookDatabase.isNotEmpty) {
-      bookIsDownloaded = true;
-    } else {
-      bookIsDownloaded = false;
-    }
-    setState(() {});
+    Provider.of<ProviderClass>(context, listen: false).checkDownload(id: title);
   }
 
   String getCategory(var input) {
@@ -159,7 +152,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     super.initState();
 
     displayResult(widget.bookToDisplay);
-    isAlreadyDownloaded();
+    
     category = getCategory(categories);
     scrollController = ScrollController()
       ..addListener(() {
@@ -181,6 +174,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   IconData like = Icons.favorite_border;
   @override
   Widget build(BuildContext context) {
+    isAlreadyDownloaded();
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -298,84 +292,82 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ],
         ),
       ),
-      floatingActionButton: SpeedDial(
-        visible: _dialVisible,
-        overlayOpacity: 0.5,
-        animatedIcon: AnimatedIcons.menu_close,
-        children: [
-          bookIsDownloaded
-              ? SpeedDialChild(
-                  child: Icon(FlutterIcons.book_reader_faw5s),
-                  onTap: () async{
-                    var path = await displayBookDatabase[0]['path'];
-                    print('path is $path');
-                    openBook(path);
-                    // EpubKitty.setConfig(
-                    //     'androidBook', '#06d6a7', 'vertical', true);
-                    // EpubKitty.open(path);
-                  })
-              : SpeedDialChild(
-                  backgroundColor:
-                      downloadLink == null ? Colors.red : Colors.green,
-                  child: Icon(Icons.file_download),
-                  onTap: () async {
-                    if (downloadLink != null) {
-                      bool downloaded = await (showModalBottomSheet(
-                        isScrollControlled: false,
-                        isDismissible: false,
-                        context: context,
-                        builder: (context) => DownloadScreen(
-                          url: downloadLink,
-                          bookInfo: widget.bookToDisplay,
-                        ),
-                      ));
-                      if (downloaded) {
-                        print('this is what i got back: $downloaded');
-                        setState(() {
-                          bookIsDownloaded = true;
-                        });
-                        _scaffoldKey.currentState.showSnackBar(
-                          SnackBar(
-                            duration: Duration(seconds: 5),
-                            backgroundColor: Colors.green,
-                            content: Text('Download successful'),
-                            action: SnackBarAction(
-                              textColor: Colors.white,
-                              label: 'Open',
-                              onPressed: () {},
+      floatingActionButton: Consumer<ProviderClass>(
+        builder: (context, provider, child) {
+          return SpeedDial(
+            visible: _dialVisible,
+            overlayOpacity: 0.5,
+            animatedIcon: AnimatedIcons.menu_close,
+            children: [
+              provider.downloaded
+                  ? SpeedDialChild(
+                      child: Icon(FlutterIcons.book_reader_faw5s),
+                      onTap: () async {
+                        var path = provider.bookToRead['path'];
+                        openBook(path);
+                      })
+                  : SpeedDialChild(
+                      backgroundColor:
+                          downloadLink == null ? Colors.red : Colors.green,
+                      child: Icon(Icons.file_download),
+                      onTap: () async {
+                        if (downloadLink != null) {
+                          bool downloaded = await (showModalBottomSheet(
+                            isScrollControlled: false,
+                            isDismissible: false,
+                            context: context,
+                            builder: (context) => DownloadScreen(
+                              url: downloadLink,
+                              bookInfo: widget.bookToDisplay,
                             ),
-                          ),
-                        );
-                      } else {
-                        _scaffoldKey.currentState.showSnackBar(
-                          SnackBar(
-                            duration: Duration(seconds: 5),
-                            backgroundColor: Colors.red,
-                            content: Text('Could not download'),
-                            action: SnackBarAction(
-                              textColor: Colors.white,
-                              label: 'Try again',
-                              onPressed: () {},
+                          ));
+                          if (downloaded) {
+                            // checks the downloads database and assign the variable 'downloaded' and 'bookToRead' respectively
+                            isAlreadyDownloaded();
+                            _scaffoldKey.currentState.showSnackBar(
+                              SnackBar(
+                                duration: Duration(seconds: 5),
+                                backgroundColor: Colors.green,
+                                content: Text('Download successful'),
+                                action: SnackBarAction(
+                                  textColor: Colors.white,
+                                  label: 'Open',
+                                  onPressed: () {},
+                                ),
+                              ),
+                            );
+                          } else {
+                            _scaffoldKey.currentState.showSnackBar(
+                              SnackBar(
+                                duration: Duration(seconds: 5),
+                                backgroundColor: Colors.red,
+                                content: Text('Could not download'),
+                                action: SnackBarAction(
+                                  textColor: Colors.white,
+                                  label: 'Try again',
+                                  onPressed: () {},
+                                ),
+                              ),
+                            );
+                          }
+                        } else {
+                          _scaffoldKey.currentState.showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text('Unavailable for download'),
                             ),
-                          ),
-                        );
-                      }
-                    } else {
-                      _scaffoldKey.currentState.showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.red,
-                          content: Text('Unavailable for download'),
-                        ),
-                      );
-                    }
-                  }),
-          SpeedDialChild(
-            child: Icon(Icons.library_add),
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.favorite),
-          ),
-        ],
+                          );
+                        }
+                      }),
+              SpeedDialChild(
+                child: Icon(Icons.library_add),
+              ),
+              SpeedDialChild(
+                child: Icon(Icons.favorite),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
