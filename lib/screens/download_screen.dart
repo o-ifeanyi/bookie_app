@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:bookie/constants.dart';
-import 'package:bookie/models/download_helper.dart';
 import 'package:bookie/models/provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';

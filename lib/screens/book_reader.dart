@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:bookie/constants.dart';
 import 'package:epub_view/epub_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:progress_indicators/progress_indicators.dart';
 import 'dart:io';
 

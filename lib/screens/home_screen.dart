@@ -1,12 +1,7 @@
 import 'package:bookie/constants.dart';
-import 'package:bookie/models/get_token.dart';
-import 'package:bookie/models/signin_signup.dart';
+import 'package:bookie/screens/search_screen.dart';
 import 'package:bookie/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-
-final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -20,24 +15,17 @@ class _HomeScreenState extends State<HomeScreen> {
       super.setState(fn);
     }
   }
-  void isUserSignedIn() async {
-    isSignedIn = (await _googleSignIn.isSignedIn());
-    setState(() {});
-    print('User is Signed in: $isSignedIn');
-  }
 
-  bool isSignedIn = false;
-  bool accessGranted = false;
   var readingNow;
   List<Widget> pageViewWidgets = [
     Container(
       child: Center(
-        child: Text('Recommended'),
+        child: Text('Downloaded'),
       ),
     ),
     Container(
       child: Center(
-        child: Text('History'),
+        child: Text('Favourites'),
       ),
     ),
   ];
@@ -47,8 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
     fontWeight: FontWeight.bold,
     color: kLightBlack,
   );
+
   Widget continueReading() {
-    //TODO: get user bookshelf 'reading now' and diplay in a listview builder.
     return Container(
       child: Center(
         child: Text('List goes here'),
@@ -89,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget recommended() {
+  Widget tabBarViewWidgets() {
     return Expanded(
       child: Column(
         children: <Widget>[
@@ -103,10 +91,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             tabs: [
               Text(
-                'Recommended',
+                'Downloaded',
               ),
               Text(
-                'History',
+                'Favourites',
               ),
             ],
           ),
@@ -117,69 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget recommendedNull(context) {
-    return Container(
-      child: Expanded(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Text(
-              'Getting started',
-              style: activeStyle,
-            ),
-            ListTile(
-              leading: Icon(FontAwesome.google),
-              title: Text(
-                'Step one',
-              ),
-              subtitle: Text('Sign in with google'),
-              trailing: isSignedIn
-                  ? Icon(Icons.done_all, color: Colors.green)
-                  : Icon(Icons.cancel, color: Colors.red),
-              onTap: () async {
-                try {
-                  await SignInSignUp().handleGoogleSignIn(context);
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      backgroundColor: Colors.green,
-                      content: Text('Sign in succesful'),
-                    ),
-                  );
-                  setState(() {
-                    isSignedIn = true;
-                  });
-                } catch (e) {
-                  print(e);
-                }
-              },
-            ),
-            ListTile(
-              leading: Icon(FontAwesome.universal_access),
-              title: Text(
-                'Step two',
-              ),
-              subtitle: Text('Allow bookie manage your google books'),
-              trailing: accessGranted
-                  ? Icon(Icons.check, color: Colors.green)
-                  : Icon(Icons.cancel, color: Colors.red),
-              onTap: () async {
-                try {
-                  GetToken.token();
-                } catch (e) {
-                  print(e);
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
-    isUserSignedIn();
   }
 
   @override
@@ -190,6 +118,17 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           title: Text('Home'),
           actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SearchScreen(),
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {
@@ -219,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 5),
               readingNow != null ? continueReading() : continueReadingNull(),
               SizedBox(height: 5),
-              accessGranted ? recommended() : recommendedNull(context),
+              tabBarViewWidgets(),
             ],
           ),
         ),

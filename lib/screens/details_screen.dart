@@ -31,7 +31,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  // var downloadDB = DownloadsDB();
   final imagePlaceHolder =
       'https://lh3.googleusercontent.com/proxy/u8TYJjSEp6IjX6HF2BqR2PmM68Zf6uG-l_DamX5vNfO-euliRz4vfeIJvHlp6CZ1B0EGCW3SXBTEyLjdu2poFM16m0Dr1rMt';
   String imageLink;

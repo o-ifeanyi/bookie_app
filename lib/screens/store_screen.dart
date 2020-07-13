@@ -30,12 +30,12 @@ class _HomeScreenState extends State<StoreScreen> {
   final Map<String, String> bookTags = {
     'Romance': 'Feel the passion',
     'Drama': 'Engross yourself',
-    'History': 'Revisit history',
-    'Action': 'Live the action',
-    'Art': 'Experience art',
-    'Mystery': 'So mysterious',
-    'Horror': 'Shivers',
-    'Fantasy': 'Wish on',
+    // 'History': 'Revisit history',
+    // 'Action': 'Live the action',
+    // 'Art': 'Experience art',
+    // 'Mystery': 'So mysterious',
+    // 'Horror': 'Shivers',
+    // 'Fantasy': 'Wish on',
   };
   num pageListNumber = 0;
   bool pageIsEmpty = true;

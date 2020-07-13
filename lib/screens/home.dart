@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bookie/screens/home_screen.dart';
 import 'package:bookie/screens/store_screen.dart';
-import 'package:bookie/screens/profile_screen.dart';
 
 class MyHome extends StatefulWidget {
   static String id = 'myHome';
@@ -13,7 +12,6 @@ class _MyAppState extends State<MyHome> {
   static List<Widget> _screenOptions = [
     HomeScreen(),
     StoreScreen(),
-    ProfileScreen(),
   ];
 
   static int _selectedIndex = 0;
@@ -46,8 +44,6 @@ class _MyAppState extends State<MyHome> {
             buildBottomNavigationBarItem(title: 'Home', icon: Icons.home),
             buildBottomNavigationBarItem(
                 title: 'Explore', icon: Icons.explore),
-            buildBottomNavigationBarItem(
-                title: 'Profile', icon: Icons.person),
           ],
           currentIndex: _selectedIndex,
           onTap: (int index) {
