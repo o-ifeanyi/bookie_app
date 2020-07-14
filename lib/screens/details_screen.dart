@@ -92,6 +92,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   void isAlreadyDownloaded() async {
     Provider.of<ProviderClass>(context, listen: false).checkDownload(id: id);
+    Provider.of<ProviderClass>(context, listen: false).checkFavourites(id: id);
   }
 
   String getCategory(var input) {
@@ -152,7 +153,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     super.initState();
 
     displayResult(widget.bookToDisplay);
-    
+
     category = getCategory(categories);
     scrollController = ScrollController()
       ..addListener(() {
@@ -361,8 +362,22 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         }
                       }),
               SpeedDialChild(
-                child: Icon(Icons.favorite),
-              ),
+                  child: Icon(
+                    Icons.favorite,
+                    color: provider.isFavourite ? Colors.red : Colors.white,
+                  ),
+                  onTap: () {
+                    var id = widget.bookToDisplay['id'];
+                    if (provider.isFavourite) {
+                      provider.removeFavourite(id);
+                    } else {
+                      provider.addToFavourites({
+                        'id': id,
+                        'bookInfo': widget.bookToDisplay,
+                      });
+                    }
+                    isAlreadyDownloaded();
+                  }),
             ],
           );
         },

@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void updateScreen() {
     // Provider.of<ProviderClass>(context, listen: false).lastOpenedBook();
     Provider.of<ProviderClass>(context, listen: false).getDownloadedBooks();
+    Provider.of<ProviderClass>(context, listen: false).getFavouriteBooks();
   }
 
   void openBook(var path, var id) {
@@ -56,13 +57,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    updateScreen();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // currentlyReading();
+    updateScreen();
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
@@ -191,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 provider.allBooks.isEmpty
                     ? emptyState("images/no_downloads.png")
                     : Container(
-                        height: 180,
+                        height: 240,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: provider.allBooks.length,
@@ -199,8 +199,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             var bookInfo = provider.allBooks[index]['bookInfo'];
                             return FlipCard(
                               front: BookCard(
-                                imgHeight: 180,
-                                imgWidth: 130,
+                                imgHeight: 240,
+                                imgWidth: 170,
                                 imageLink: bookInfo['volumeInfo']['imageLinks']
                                     ['smallThumbnail'],
                               ),
@@ -212,8 +212,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 child: Container(
-                                  height: 180,
-                                  width: 130,
+                                  height: 240,
+                                  width: 170,
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
@@ -269,8 +269,71 @@ class _HomeScreenState extends State<HomeScreen> {
                 provider.favourites.isEmpty
                     ? emptyState("images/no_favourites.png")
                     : Container(
-                        child: Center(
-                          child: Text('hi'),
+                        height: 240,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: provider.favourites.length,
+                          itemBuilder: (context, index) {
+                            var bookInfo = provider.favourites[index]['bookInfo'];
+                            return FlipCard(
+                              front: BookCard(
+                                imgHeight: 240,
+                                imgWidth: 170,
+                                imageLink: bookInfo['volumeInfo']['imageLinks']
+                                    ['smallThumbnail'],
+                              ),
+                              back: Card(
+                                elevation: 4.0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10.0),
+                                  ),
+                                ),
+                                child: Container(
+                                  height: 240,
+                                  width: 170,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: <Widget>[
+                                      GestureDetector(
+                                        onTap: () {
+                                          openDetails(bookInfo);
+                                        },
+                                        child: Text('View Info'),
+                                      ),
+                                      GestureDetector(
+                                          onTap: () {
+                                            
+                                          },
+                                          child: Text('Download')),
+                                      GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: Text(
+                                                    'remove ${bookInfo['volumeInfo']['title']}?'),
+                                                actions: <Widget>[
+                                                  FlatButton(
+                                                    onPressed: () {},
+                                                    child: Text('yes'),
+                                                  ),
+                                                  FlatButton(
+                                                    onPressed: () {},
+                                                    child: Text('No'),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          child: Text('Remove'))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
               ],
