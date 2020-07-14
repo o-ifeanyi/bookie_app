@@ -27,3 +27,9 @@ const kCursiveHeading = TextStyle(
 
 const kSearchResultTextStyle = TextStyle(
     fontSize: 16, fontWeight: FontWeight.w300, fontFamily: 'Source Sans Pro');
+
+const kActiveStyle = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+    color: kLightBlack,
+  );

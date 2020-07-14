@@ -7,8 +7,11 @@ class ProviderClass extends ChangeNotifier {
   var dlDB = DownloadsDB();
   bool downloaded = false;
   var bookToRead;
+  var currentlyReading;
+  List allBooks = [];
+  List favourites = [];
 
-  void addToPage(Widget widget) {
+  void addToPage(Widget widget) async {
     pageListWidget.add(widget);
     notifyListeners();
   }
@@ -21,10 +24,31 @@ class ProviderClass extends ChangeNotifier {
   Future<void> checkDownload({String id}) async {
     List downloadedBooks = await dlDB.check({'id': id});
     if (downloadedBooks.isNotEmpty) {
-      bookToRead = downloadedBooks[0];
+      bookToRead = downloadedBooks.first;
       downloaded = true;
     } else {
       downloaded = false;
+    }
+    notifyListeners();
+  }
+
+  Future<void> getDownloadedBooks() async {
+    List downloadedBooks = await dlDB.listAll();
+    if (downloadedBooks.isNotEmpty) {
+      allBooks = downloadedBooks;
+    }
+    notifyListeners();
+  }
+
+  Future<void> lastOpenedBook(var id) async {
+    List downloadedBooks = await dlDB.listAll();
+    if (downloadedBooks.isNotEmpty) {
+      for (var book in downloadedBooks) {
+        var bookId = book['id'];
+        if (bookId == id) {
+          currentlyReading = book;
+        }
+      }
     }
     notifyListeners();
   }

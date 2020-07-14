@@ -91,7 +91,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   void isAlreadyDownloaded() async {
-    Provider.of<ProviderClass>(context, listen: false).checkDownload(id: title);
+    Provider.of<ProviderClass>(context, listen: false).checkDownload(id: id);
   }
 
   String getCategory(var input) {
@@ -130,12 +130,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
   }
 
-  void openBook(var path) {
+  void openBook(var path, var id) {
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => BookReader(
                 bookPath: path,
+                id: id,
               )),
     );
   }
@@ -302,8 +303,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   ? SpeedDialChild(
                       child: Icon(FlutterIcons.book_reader_faw5s),
                       onTap: () async {
+                        var id = provider.bookToRead['id'];
                         var path = provider.bookToRead['path'];
-                        openBook(path);
+                        openBook(path, id);
                       })
                   : SpeedDialChild(
                       backgroundColor:
@@ -358,9 +360,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           );
                         }
                       }),
-              SpeedDialChild(
-                child: Icon(Icons.library_add),
-              ),
               SpeedDialChild(
                 child: Icon(Icons.favorite),
               ),

@@ -45,6 +45,7 @@ dependencies:
   liquid_pull_to_refresh: ^2.0.0
   xml2json: ^4.1.1
   epub_view: any
+  flip_card: ^0.4.4
 
 dev_dependencies:
   flutter_test:

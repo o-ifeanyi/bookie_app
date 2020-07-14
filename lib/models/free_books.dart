@@ -40,6 +40,7 @@ class FreeBooksApi {
       rearranged['items'][i]['accessInfo'] = {};
       rearranged['items'][i]['accessInfo']['epub'] = {};
 
+      rearranged['items'][i]['id'] = book['id']['\$t'];
       rearranged['items'][i]['volumeInfo']['title'] = book['title']['\$t'];
       rearranged['items'][i]['volumeInfo']['authors'] =
           book['author']['name']['\$t'];

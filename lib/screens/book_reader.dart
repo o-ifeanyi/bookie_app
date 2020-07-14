@@ -1,13 +1,17 @@
 import 'dart:typed_data';
 import 'package:bookie/constants.dart';
+import 'package:bookie/models/provider.dart';
 import 'package:epub_view/epub_view.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'dart:io';
 
+import 'package:provider/provider.dart';
+
 class BookReader extends StatefulWidget {
   final bookPath;
-  BookReader({this.bookPath});
+  final id;
+  BookReader({this.bookPath, this.id});
   @override
   _BookReaderState createState() => _BookReaderState();
 }
@@ -24,6 +28,7 @@ class _BookReaderState extends State<BookReader> {
 
   @override
   void initState() {
+    Provider.of<ProviderClass>(context, listen: false).lastOpenedBook(widget.id);
     _epubController = EpubController(
       // Future<Uint8List>
       data: loadBook(widget.bookPath),
@@ -40,6 +45,7 @@ class _BookReaderState extends State<BookReader> {
 
   @override
   Widget build(BuildContext context) {
+    // Provider.of<ProviderClass>(context, listen: false).lastOpenedBook(widget.id);
     return Scaffold(
       appBar: AppBar(
         // Show actual chapter name

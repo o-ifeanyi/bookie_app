@@ -112,7 +112,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
   @override
   void initState() {
     super.initState();
-    bookId = widget.bookInfo['volumeInfo']['title'];
+    bookId = widget.bookInfo['id'];
     downloadBook(widget.url, widget.bookInfo['volumeInfo']['title']);
   }
 

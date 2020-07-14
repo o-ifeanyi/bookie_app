@@ -29,7 +29,7 @@ class _HomeScreenState extends State<StoreScreen> {
 
   final Map<String, String> bookTags = {
     'Romance': 'Feel the passion',
-    'Drama': 'Engross yourself',
+    // 'Drama': 'Engross yourself',
     // 'History': 'Revisit history',
     // 'Action': 'Live the action',
     // 'Art': 'Experience art',
