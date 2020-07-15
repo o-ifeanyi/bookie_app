@@ -45,3 +45,38 @@ class DownloadsDB {
     return val;
   }
 }
+
+class CurrentlyReadingDB {
+  getPath() async {
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    final path = documentDirectory.path + '/currenlyReading.db';
+    return path;
+  }
+
+  //Insertion
+  add(Map item) async {
+    final db = ObjectDB(await getPath());
+    db.open();
+    db.insert(item);
+    db.tidy();
+    await db.close();
+  }
+
+  Future<int> remove(Map item) async {
+    final db = ObjectDB(await getPath());
+    db.open();
+    int val = await db.remove(item);
+    db.tidy();
+    await db.close();
+    return val;
+  }
+
+  Future<List> listAll() async {
+    final db = ObjectDB(await getPath());
+    db.open();
+    List val = await db.find({});
+    db.tidy();
+    await db.close();
+    return val;
+  }
+}

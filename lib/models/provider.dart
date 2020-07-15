@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class ProviderClass extends ChangeNotifier {
   var dlDB = DownloadsDB();
   var fvDB = FavoriteDB();
+  var crDB = CurrentlyReadingDB();
   List<Widget> pageListWidget = [];
   bool downloaded = false;
   bool isFavourite = false;
@@ -21,22 +22,23 @@ class ProviderClass extends ChangeNotifier {
 
   Future<void> addToDataBase(Map item) async {
     await dlDB.add(item);
+    await getDownloadedBooks();
     notifyListeners();
   }
 
-  Future<void> addToFavourites(Map item) async {
-    await fvDB.add(item);
+  Future<void> addToFavourites(String id, var bookInfo) async {
+    await fvDB.add({
+      'id': id,
+      'bookInfo': bookInfo,
+    });
     favourites.clear();
     await getFavouriteBooks();
     notifyListeners();
   }
 
   Future<void> removeFavourite(String id) async {
-    List favouriteBooks = await fvDB.check({'id': id});
-    if (favouriteBooks.isNotEmpty) {
-      await fvDB.remove(favouriteBooks.first);
-      isFavourite = false;
-    }
+    await fvDB.remove({'id': id});
+    isFavourite = false;
     favourites.clear();
     await getFavouriteBooks();
     notifyListeners();
@@ -79,15 +81,37 @@ class ProviderClass extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> removeDownload(String id) async {
+    await dlDB.remove({'id': id});
+    //TODO: if the book is currently beign read empty crDB
+    downloaded = false;
+    allBooks.clear();
+    await getDownloadedBooks();
+    notifyListeners();
+  }
+
   Future<void> lastOpenedBook(var id) async {
-    List downloadedBooks = await dlDB.listAll();
-    if (downloadedBooks.isNotEmpty) {
-      for (var book in downloadedBooks) {
-        var bookId = book['id'];
-        if (bookId == id) {
-          currentlyReading = book;
-        }
-      }
+    List currentItem = await crDB.listAll();
+    if (currentItem.isNotEmpty) {
+      await crDB.remove({});
+      await crDB.add({
+        'currentlyReading': id,
+      });
+    } else {
+      await crDB.add({
+        'currentlyReading': id,
+      });
+    }
+    await getCurrentlyReading();
+    notifyListeners();
+  }
+
+  Future<void> getCurrentlyReading() async {
+    List currentItem = await crDB.listAll();
+    if (currentItem.isNotEmpty) {
+      List result =
+          await dlDB.check({'id': currentItem.first['currentlyReading']});
+      currentlyReading = result.first;
     }
     notifyListeners();
   }

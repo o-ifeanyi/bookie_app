@@ -16,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List cardKeys = [];
   @override
   void setState(fn) {
     if (mounted) {
@@ -23,10 +24,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void updateScreen() {
-    // Provider.of<ProviderClass>(context, listen: false).lastOpenedBook();
-    Provider.of<ProviderClass>(context, listen: false).getDownloadedBooks();
-    Provider.of<ProviderClass>(context, listen: false).getFavouriteBooks();
+  void updateScreen() async {
+    await Provider.of<ProviderClass>(context, listen: false).getCurrentlyReading();
+    await Provider.of<ProviderClass>(context, listen: false).getDownloadedBooks();
+    await Provider.of<ProviderClass>(context, listen: false).getFavouriteBooks();
   }
 
   void openBook(var path, var id) {
@@ -51,18 +52,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> refresh() {
     Duration duration = Duration(seconds: 1);
-    setState(() {});
+    updateScreen();
     return Future.delayed(duration);
   }
 
   @override
   void initState() {
+    updateScreen();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    updateScreen();
+    // updateScreen();
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
@@ -99,12 +101,15 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListView(
               padding: EdgeInsets.only(left: 15, top: 10),
               children: <Widget>[
-                Text(
-                  'Continue reading',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: kLightBlack,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    'Continue reading',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: kLightBlack,
+                    ),
                   ),
                 ),
                 SizedBox(height: 5),
@@ -184,9 +189,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                 SizedBox(height: 5),
-                Text(
-                  'Downloaded',
-                  style: kActiveStyle,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    'Downloaded',
+                    style: kActiveStyle,
+                  ),
                 ),
                 provider.allBooks.isEmpty
                     ? emptyState("images/no_downloads.png")
@@ -196,8 +204,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           scrollDirection: Axis.horizontal,
                           itemCount: provider.allBooks.length,
                           itemBuilder: (context, index) {
+                            // cardKeys[index] = Key('cardKey$index');
                             var bookInfo = provider.allBooks[index]['bookInfo'];
+                            var id = provider.allBooks[index]['id'];
                             return FlipCard(
+                              // key: cardKeys[index],
                               front: BookCard(
                                 imgHeight: 240,
                                 imgWidth: 170,
@@ -218,23 +229,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
                                     children: <Widget>[
-                                      GestureDetector(
-                                        onTap: () {
+                                      FlatButton(
+                                        onPressed: () {
                                           openDetails(bookInfo);
                                         },
                                         child: Text('View Info'),
                                       ),
-                                      GestureDetector(
-                                          onTap: () {
-                                            var id =
-                                                provider.allBooks[index]['id'];
+                                      FlatButton(
+                                          onPressed: () {
                                             var path = provider.allBooks[index]
                                                 ['path'];
                                             openBook(path, id);
                                           },
                                           child: Text('Read Now')),
-                                      GestureDetector(
-                                          onTap: () {
+                                      FlatButton(
+                                          onPressed: () {
                                             showDialog(
                                               context: context,
                                               builder: (context) => AlertDialog(
@@ -242,11 +251,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     'Delete ${bookInfo['volumeInfo']['title']}?'),
                                                 actions: <Widget>[
                                                   FlatButton(
-                                                    onPressed: () {},
+                                                    onPressed: () async {
+                                                      await provider
+                                                          .removeDownload(id);
+                                                      Navigator.pop(context);
+                                                    },
                                                     child: Text('yes'),
                                                   ),
                                                   FlatButton(
-                                                    onPressed: () {},
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                      // cardKeys[index].currentState.toggleCard();
+                                                    },
                                                     child: Text('No'),
                                                   ),
                                                 ],
@@ -262,9 +278,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                       ),
-                Text(
-                  'Favourites',
-                  style: kActiveStyle,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    'Favourites',
+                    style: kActiveStyle,
+                  ),
                 ),
                 provider.favourites.isEmpty
                     ? emptyState("images/no_favourites.png")
@@ -274,7 +293,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           scrollDirection: Axis.horizontal,
                           itemCount: provider.favourites.length,
                           itemBuilder: (context, index) {
-                            var bookInfo = provider.favourites[index]['bookInfo'];
+                            var bookInfo =
+                                provider.favourites[index]['bookInfo'];
+                            var id = provider.favourites[index]['id'];
                             return FlipCard(
                               front: BookCard(
                                 imgHeight: 240,
@@ -303,9 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Text('View Info'),
                                       ),
                                       GestureDetector(
-                                          onTap: () {
-                                            
-                                          },
+                                          onTap: () {},
                                           child: Text('Download')),
                                       GestureDetector(
                                           onTap: () {
@@ -313,14 +332,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                               context: context,
                                               builder: (context) => AlertDialog(
                                                 title: Text(
-                                                    'remove ${bookInfo['volumeInfo']['title']}?'),
+                                                    'Remove "${bookInfo['volumeInfo']['title']}" from favourites?'),
                                                 actions: <Widget>[
                                                   FlatButton(
-                                                    onPressed: () {},
+                                                    onPressed: () async {
+                                                      await provider
+                                                          .removeFavourite(id);
+                                                      Navigator.pop(context);
+                                                    },
                                                     child: Text('yes'),
                                                   ),
                                                   FlatButton(
-                                                    onPressed: () {},
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
                                                     child: Text('No'),
                                                   ),
                                                 ],

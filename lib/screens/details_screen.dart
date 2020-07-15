@@ -366,15 +366,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     Icons.favorite,
                     color: provider.isFavourite ? Colors.red : Colors.white,
                   ),
-                  onTap: () {
+                  onTap: () async {
                     var id = widget.bookToDisplay['id'];
                     if (provider.isFavourite) {
-                      provider.removeFavourite(id);
+                      await provider.removeFavourite(id);
                     } else {
-                      provider.addToFavourites({
-                        'id': id,
-                        'bookInfo': widget.bookToDisplay,
-                      });
+                      await provider.addToFavourites(id, widget.bookToDisplay);
                     }
                     isAlreadyDownloaded();
                   }),

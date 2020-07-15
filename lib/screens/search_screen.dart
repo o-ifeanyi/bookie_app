@@ -53,7 +53,6 @@ class _SearchScreenState extends State<SearchScreen> {
       displayText = 'No result for\n"$searchInput"';
       debugPrint(e.toString());
     } finally {
-      searchFeildController.clear();
       dismissLoader();
     }
   }
@@ -159,6 +158,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                 ],
                               ),
+                              suffixIcon: IconButton(
+                                  icon: Icon(Icons.clear),
+                                  onPressed: () {
+                                    searchFeildController.clear();
+                                  }),
                               hintText: 'Search by title or author',
                             ),
                           ),

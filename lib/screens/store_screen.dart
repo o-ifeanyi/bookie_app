@@ -66,14 +66,17 @@ class _HomeScreenState extends State<StoreScreen> {
           pageIsEmpty = false;
         });
       } catch (SocketException) {
-        setState(() {
-          ErrorHandling.handleSocketException(context);
-          loadingPage = Container(
-            child: ErrorPage(() {
-              buildPageList(context, true);
-            }),
-          );
-        });
+        //look for a better way to stop snacbar from showing up everytime
+        if (tag == 'Romance' || tag == 'Fantasy') {
+          setState(() {
+            ErrorHandling.handleSocketException(context);
+            loadingPage = Container(
+              child: ErrorPage(() {
+                buildPageList(context, true);
+              }),
+            );
+          });
+        }
       }
 
       Provider.of<ProviderClass>(context, listen: false).addToPage(
