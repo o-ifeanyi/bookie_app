@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'package:bookie/constants.dart';
 import 'package:bookie/models/provider.dart';
 import 'package:epub_view/epub_view.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +44,6 @@ class _BookReaderState extends State<BookReader> {
 
   @override
   Widget build(BuildContext context) {
-    // Provider.of<ProviderClass>(context, listen: false).lastOpenedBook(widget.id);
     return Scaffold(
       appBar: AppBar(
         // Show actual chapter name
@@ -62,7 +60,7 @@ class _BookReaderState extends State<BookReader> {
         child: Drawer(
           child: EpubReaderTableOfContents(
             loader: GlowingProgressIndicator(
-              child: Icon(Icons.book, size: 40, color: kBlueAccent),
+              child: Icon(Icons.book, size: 40, color: Theme.of(context).accentColor),
             ),
             controller: _epubController,
           ),

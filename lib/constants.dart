@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-const Color kDarkBlue = Color(0xFF0A0E21);
-const Color kBlueAccent = Color(0xFF2296F3);
-const Color kLightBlack = Colors.black45;
 const kInputDecoration = InputDecoration(
   hintText: '',
   contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
@@ -31,5 +28,24 @@ const kSearchResultTextStyle = TextStyle(
 const kActiveStyle = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.bold,
-    color: kLightBlack,
+    // color: kLightBlack,
   );
+
+final kDarkTheme = ThemeData(
+  primarySwatch: Colors.grey,
+  primaryColor: Color(0xFF212121),
+  brightness: Brightness.dark,
+  backgroundColor: Color(0xFF212121),
+  scaffoldBackgroundColor: Colors.black54,
+  accentColor: Color(0xFF2296F3),
+);
+
+final kLightTheme = ThemeData(
+  primarySwatch: Colors.grey,
+  primaryColor: Color(0xFF2296F3),
+  brightness: Brightness.light,
+  backgroundColor: Color(0xFFE5E5E5),
+  scaffoldBackgroundColor: Colors.white,
+  accentColor: Color(0xFF2296F3),
+  dividerColor: Colors.white54,
+);

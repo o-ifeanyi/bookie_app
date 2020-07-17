@@ -7,7 +7,6 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 
 class SearchScreen extends StatefulWidget {
-  static String id = 'searchScreen';
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
@@ -97,7 +96,7 @@ class _SearchScreenState extends State<SearchScreen> {
         progressIndicator: GlowingProgressIndicator(
           child: Icon(
             Icons.book,
-            color: kBlueAccent,
+            color: Theme.of(context).accentColor,
             size: 50,
           ),
         ),
@@ -110,7 +109,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 Container(
                   decoration: BoxDecoration(
                       border: Border.all(
-                        color: kLightBlack,
                         width: 1,
                       ),
                       borderRadius: BorderRadius.circular(30)),
@@ -119,7 +117,6 @@ class _SearchScreenState extends State<SearchScreen> {
                       IconButton(
                         icon: Icon(
                           Icons.arrow_back,
-                          color: kLightBlack,
                         ),
                         onPressed: () {
                           Navigator.pop(context);
@@ -170,7 +167,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: kBlueAccent,
+                          color: Theme.of(context).accentColor,
                           borderRadius: BorderRadius.only(
                             topRight: Radius.circular(30),
                             bottomRight: Radius.circular(30),
@@ -210,12 +207,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           child: Text(
                             displayText,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'Kaushan Script',
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                              color: kLightBlack,
-                            ),
+                            style: kCursiveHeading,
                           ),
                         ),
                       )

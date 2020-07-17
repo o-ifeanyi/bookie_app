@@ -4,6 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProviderClass extends ChangeNotifier {
+
+  ProviderClass(this._themeData);
+
+  ThemeData _themeData;
   var dlDB = DownloadsDB();
   var fvDB = FavoriteDB();
   var crDB = CurrentlyReadingDB();
@@ -14,6 +18,13 @@ class ProviderClass extends ChangeNotifier {
   var currentlyReading;
   List allBooks = [];
   List favourites = [];
+
+  getTheme() => _themeData;
+
+  setTheme(ThemeData themeData) async {
+    _themeData = themeData;
+    notifyListeners();
+  }
 
   void addToPage(Widget widget) async {
     pageListWidget.add(widget);
@@ -83,7 +94,10 @@ class ProviderClass extends ChangeNotifier {
 
   Future<void> removeDownload(String id) async {
     await dlDB.remove({'id': id});
-    //TODO: if the book is currently beign read empty crDB
+    if (currentlyReading['id'] == id) {
+      await crDB.remove({});
+      currentlyReading = null;
+    }
     downloaded = false;
     allBooks.clear();
     await getDownloadedBooks();

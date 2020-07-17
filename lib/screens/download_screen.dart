@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:bookie/constants.dart';
 import 'package:bookie/models/provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,6 @@ import 'package:provider/provider.dart';
 class DownloadScreen extends StatefulWidget {
   final url;
   final bookInfo;
-  static String id = 'downloadScreen';
 
   DownloadScreen({@required this.url, @required this.bookInfo});
   @override
@@ -22,7 +20,6 @@ class DownloadScreen extends StatefulWidget {
 
 class _DownloadScreenState extends State<DownloadScreen> {
   Dio dio = Dio();
-  // var downloadDB = DownloadsDB();
   String bookId;
   String downloadProgress = '0';
   int downloadedBytes = 0;
@@ -72,7 +69,6 @@ class _DownloadScreenState extends State<DownloadScreen> {
             onReceiveProgress: (received, total) async {
               if (total != -1) {
                 setState(() {
-                  print('received: $received, total: $total');
                   downloadedBytes = received;
                   totalBytes = total;
                   downloadProgress =
@@ -80,20 +76,19 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 });
               } else {
                 Navigator.pop(context, false);
-                print('Redirecting to captcha');
               }
             },
           )
           .catchError(
             (e) => {
-              print('this is the error: $e'),
               Navigator.pop(context, false),
             },
           )
           .then((value) async {
             var downloadSize = formatBytes(totalBytes, 1);
             if (value != null) {
-              await Provider.of<ProviderClass>(context, listen: false).addToDataBase(
+              await Provider.of<ProviderClass>(context, listen: false)
+                  .addToDataBase(
                 {
                   'id': bookId,
                   'path': path,
@@ -121,15 +116,21 @@ class _DownloadScreenState extends State<DownloadScreen> {
     return Container(
       height: 150,
       child: LiquidLinearProgressIndicator(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         value: double.parse(downloadProgress) / 100.0,
-        center: Text(
-          '$downloadProgress %',
-          style: TextStyle(
-            color: kLightBlack,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-          ),
+        center: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Downloading...'),
+            SizedBox(height: 5,),
+            Text(
+              '$downloadProgress %',
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );

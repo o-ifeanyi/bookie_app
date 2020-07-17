@@ -1,4 +1,3 @@
-import 'package:bookie/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:octo_image/octo_image.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -32,8 +31,8 @@ class BookCard extends StatelessWidget {
               placeholderBuilder: (context) => GlowingProgressIndicator(
                 child: Icon(
                   Icons.book,
-                  size: 40,
-                  color: kBlueAccent,
+                  size: 30,
+                  color: Theme.of(context).accentColor,
                 ),
               ),
               errorBuilder: OctoError.icon(color: Colors.red),

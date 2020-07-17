@@ -13,7 +13,6 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:provider/provider.dart';
 
 class DetailsScreen extends StatefulWidget {
-  static String id = 'detailScreen';
   final bookToDisplay;
 
   DetailsScreen({@required this.bookToDisplay});
@@ -45,9 +44,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   String category;
   num rating;
   String downloadLink;
-  ScrollController scrollController;
   int descriptonMaxLines = 10;
-  bool _dialVisible = true;
   dynamic moreFromAuthorData;
   int listLenght = 0;
   String seeMore = 'View more';
@@ -91,8 +88,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   void isAlreadyDownloaded() async {
-    Provider.of<ProviderClass>(context, listen: false).checkDownload(id: id);
-    Provider.of<ProviderClass>(context, listen: false).checkFavourites(id: id);
+    await Provider.of<ProviderClass>(context, listen: false)
+        .checkDownload(id: id);
+    await Provider.of<ProviderClass>(context, listen: false)
+        .checkFavourites(id: id);
   }
 
   String getCategory(var input) {
@@ -142,24 +141,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
   }
 
-  void setDailVisible(bool value) {
-    setState(() {
-      _dialVisible = value;
-    });
-  }
-
   @override
   void initState() {
+    isAlreadyDownloaded();
     super.initState();
-
     displayResult(widget.bookToDisplay);
-
     category = getCategory(categories);
-    scrollController = ScrollController()
-      ..addListener(() {
-        setDailVisible(scrollController.position.userScrollDirection ==
-            ScrollDirection.forward);
-      });
     getMoreData();
   }
 
@@ -175,7 +162,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
   IconData like = Icons.favorite_border;
   @override
   Widget build(BuildContext context) {
-    isAlreadyDownloaded();
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -196,7 +182,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
       body: Container(
         padding: const EdgeInsets.only(left: 15, right: 10),
         child: ListView(
-          controller: scrollController,
           children: <Widget>[
             SizedBox(height: 5),
             Row(
@@ -259,7 +244,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 seeMore,
                 textAlign: TextAlign.end,
                 style: TextStyle(
-                  color: kBlueAccent,
+                  color: Theme.of(context).accentColor,
                 ),
               ),
               onTap: () {
@@ -285,7 +270,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 child: moreFromAuthorData == null
                     ? Center(
                         child: GlowingProgressIndicator(
-                          child: Icon(Icons.book, color: kBlueAccent, size: 30),
+                          child: Icon(Icons.book,
+                              color: Theme.of(context).accentColor, size: 30),
                         ),
                       )
                     : ListBuilder(
@@ -296,7 +282,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
       floatingActionButton: Consumer<ProviderClass>(
         builder: (context, provider, child) {
           return SpeedDial(
-            visible: _dialVisible,
             overlayOpacity: 0.5,
             animatedIcon: AnimatedIcons.menu_close,
             children: [
@@ -334,7 +319,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 action: SnackBarAction(
                                   textColor: Colors.white,
                                   label: 'Open',
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    var id = provider.bookToRead['id'];
+                                    var path = provider.bookToRead['path'];
+                                    openBook(path, id);
+                                  },
                                 ),
                               ),
                             );
@@ -344,11 +333,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 duration: Duration(seconds: 5),
                                 backgroundColor: Colors.red,
                                 content: Text('Could not download'),
-                                action: SnackBarAction(
-                                  textColor: Colors.white,
-                                  label: 'Try again',
-                                  onPressed: () {},
-                                ),
                               ),
                             );
                           }

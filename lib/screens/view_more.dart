@@ -1,4 +1,3 @@
-import 'package:bookie/constants.dart';
 import 'package:bookie/models/free_books.dart';
 import 'package:bookie/screens/search_screen.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +73,7 @@ class _ViewMoreState extends State<ViewMore> {
         child: freeBooksData == null
             ? Center(
                 child: GlowingProgressIndicator(
-                  child: Icon(Icons.book, color: kBlueAccent, size: 50),
+                  child: Icon(Icons.book, color: Theme.of(context).accentColor, size: 50),
                 ),
               )
             : Container(

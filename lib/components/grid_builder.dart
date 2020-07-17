@@ -34,7 +34,6 @@ class GridBuilder extends StatelessWidget {
             imageLink = data['items'][index]['volumeInfo']['imageLinks']
                 ['smallThumbnail'];
           } catch (e) {
-            print('error with list image: $e');
             if (imageLink == null) {
               imageLink = imagePlaceHolder;
             }

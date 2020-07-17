@@ -1,12 +1,9 @@
 import 'package:bookie/models/error_handling.dart';
 import 'package:bookie/models/get_books.dart';
 import 'package:bookie/models/provider.dart';
-import 'package:bookie/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:bookie/constants.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:bookie/screens/view_more.dart';
-import 'package:bookie/screens/search_screen.dart';
 import 'package:bookie/components/list_builder.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
@@ -29,13 +26,13 @@ class _HomeScreenState extends State<StoreScreen> {
 
   final Map<String, String> bookTags = {
     'Romance': 'Feel the passion',
-    // 'Drama': 'Engross yourself',
-    // 'History': 'Revisit history',
-    // 'Action': 'Live the action',
-    // 'Art': 'Experience art',
-    // 'Mystery': 'So mysterious',
-    // 'Horror': 'Shivers',
-    // 'Fantasy': 'Wish on',
+    'Drama': 'Engross yourself',
+    'History': 'Revisit history',
+    'Action': 'Live the action',
+    'Art': 'Experience art',
+    'Mystery': 'So mysterious',
+    'Horror': 'Shivers',
+    'Fantasy': 'Wish on',
   };
   num pageListNumber = 0;
   bool pageIsEmpty = true;
@@ -50,7 +47,7 @@ class _HomeScreenState extends State<StoreScreen> {
       loadingPage = Container(
         child: Center(
           child: GlowingProgressIndicator(
-            child: Icon(Icons.book, color: kBlueAccent, size: 50),
+            child: Icon(Icons.book, size: 50, color: Color(0xFF2296F3),),
           ),
         ),
       );
@@ -59,13 +56,58 @@ class _HomeScreenState extends State<StoreScreen> {
       var bookData;
       try {
         bookData = await getBooks.getTagBooks(tag);
-        print('got books for $tag');
         listLenght = 0;
         bookData['items'].forEach((book) => listLenght++);
         setState(() {
           pageIsEmpty = false;
         });
+        Provider.of<ProviderClass>(context, listen: false).addToPage(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(left: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      bookTags[tag],
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Kaushan Script',
+                      ),
+                    ),
+                    IconButton(
+                        icon: Icon(
+                          Icons.arrow_forward,
+                        ),
+                        //pass the tag and data gotten for that tag to view_more page
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewMore(
+                                tag: tag,
+                                bookData: bookData,
+                              ),
+                            ),
+                          );
+                        }),
+                  ],
+                ),
+              ),
+              Container(
+                height: 180,
+                padding: EdgeInsets.only(left: 12),
+                child: ListBuilder(data: bookData, listLenght: listLenght),
+              ),
+            ],
+          ),
+        );
+        pageListNumber++;
       } catch (SocketException) {
+        pageListNumber = 0;
         //look for a better way to stop snacbar from showing up everytime
         if (tag == 'Romance' || tag == 'Fantasy') {
           setState(() {
@@ -78,54 +120,6 @@ class _HomeScreenState extends State<StoreScreen> {
           });
         }
       }
-
-      Provider.of<ProviderClass>(context, listen: false).addToPage(
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    bookTags[tag],
-                    style: TextStyle(
-                      color: kLightBlack,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Kaushan Script',
-                    ),
-                  ),
-                  IconButton(
-                      icon: Icon(
-                        Icons.arrow_forward,
-                        color: kLightBlack,
-                      ),
-                      //pass the tag and data gotten for that tag to view_more page
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ViewMore(
-                              tag: tag,
-                              bookData: bookData,
-                            ),
-                          ),
-                        );
-                      }),
-                ],
-              ),
-            ),
-            Container(
-              height: 180,
-              padding: EdgeInsets.only(left: 12),
-              child: ListBuilder(data: bookData, listLenght: listLenght),
-            ),
-          ],
-        ),
-      );
-      pageListNumber++;
     }
   }
 
@@ -144,7 +138,7 @@ class _HomeScreenState extends State<StoreScreen> {
   var loadingPage = Container(
     child: Center(
       child: GlowingProgressIndicator(
-        child: Icon(Icons.book, color: kBlueAccent, size: 50),
+        child: Icon(Icons.book, size: 50, color: Color(0xFF2296F3),),
       ),
     ),
   );
@@ -152,37 +146,6 @@ class _HomeScreenState extends State<StoreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Explore',
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.search,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SearchScreen(),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SettingsScreen(),
-                ),
-              );
-            },
-          )
-        ],
-      ),
       body: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

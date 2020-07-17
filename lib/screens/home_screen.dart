@@ -1,10 +1,9 @@
 import 'package:bookie/components/book_card.dart';
+import 'package:bookie/components/rounded_button.dart';
 import 'package:bookie/constants.dart';
 import 'package:bookie/models/provider.dart';
 import 'package:bookie/screens/book_reader.dart';
 import 'package:bookie/screens/details_screen.dart';
-import 'package:bookie/screens/search_screen.dart';
-import 'package:bookie/screens/settings_screen.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -25,9 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void updateScreen() async {
-    await Provider.of<ProviderClass>(context, listen: false).getCurrentlyReading();
-    await Provider.of<ProviderClass>(context, listen: false).getDownloadedBooks();
-    await Provider.of<ProviderClass>(context, listen: false).getFavouriteBooks();
+    await Provider.of<ProviderClass>(context, listen: false)
+        .getCurrentlyReading();
+    await Provider.of<ProviderClass>(context, listen: false)
+        .getDownloadedBooks();
+    await Provider.of<ProviderClass>(context, listen: false)
+        .getFavouriteBooks();
   }
 
   void openBook(var path, var id) {
@@ -58,314 +60,286 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    updateScreen();
+    // updateScreen();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // updateScreen();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SearchScreen(),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SettingsScreen(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Consumer<ProviderClass>(
-        builder: (context, provider, child) {
-          return LiquidPullToRefresh(
-            showChildOpacityTransition: false,
-            onRefresh: () => refresh(),
-            child: ListView(
-              padding: EdgeInsets.only(left: 15, top: 10),
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    'Continue reading',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: kLightBlack,
+    updateScreen();
+    return Consumer<ProviderClass>(
+      builder: (context, provider, child) {
+        return Scaffold(
+          body: Scaffold(
+            body: LiquidPullToRefresh(
+              showChildOpacityTransition: false,
+              onRefresh: () => refresh(),
+              child: ListView(
+                padding: EdgeInsets.only(left: 15, top: 10),
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      'Continue reading',
+                      style: kActiveStyle,
                     ),
                   ),
-                ),
-                SizedBox(height: 5),
-                provider.currentlyReading == null
-                    ? continueReadingNull(boxHeight: 240, boxWidth: 170)
-                    : Row(
-                        children: <Widget>[
-                          BookCard(
-                            imgHeight: 240,
-                            imgWidth: 170,
-                            imageLink: provider.currentlyReading['bookInfo']
-                                ['volumeInfo']['imageLinks']['smallThumbnail'],
-                            onPressed: () {
-                              var book = provider.currentlyReading['bookInfo'];
-                              openDetails(book);
+                  SizedBox(height: 5),
+                  provider.currentlyReading == null
+                      ? continueReadingNull(boxHeight: 240, boxWidth: 170)
+                      : Row(
+                          children: <Widget>[
+                            BookCard(
+                              imgHeight: 240,
+                              imgWidth: 170,
+                              imageLink: provider.currentlyReading['bookInfo']
+                                      ['volumeInfo']['imageLinks']
+                                  ['smallThumbnail'],
+                              onPressed: () {
+                                var book =
+                                    provider.currentlyReading['bookInfo'];
+                                openDetails(book);
+                              },
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    provider.currentlyReading['bookInfo']
+                                        ['volumeInfo']['authors'],
+                                    style: kSearchResultTextStyle,
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    provider.currentlyReading['bookInfo']
+                                        ['volumeInfo']['title'],
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w900,
+                                      fontFamily: 'Kaushan Script',
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    provider.currentlyReading['bookInfo']
+                                        ['volumeInfo']['publishedDate'],
+                                    style: kSearchResultTextStyle,
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    provider.currentlyReading['bookInfo']
+                                        ['volumeInfo']['description'],
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 4,
+                                    style: kSearchResultTextStyle,
+                                  ),
+                                  RoundedButton(
+                                    colour: Theme.of(context).accentColor,
+                                      onPressed: () {
+                                        var id =
+                                            provider.currentlyReading['id'];
+                                        var path =
+                                            provider.currentlyReading['path'];
+                                        openBook(path, id);
+                                      },
+                                      label: 'Read Now')
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                  SizedBox(height: 5),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      'Downloaded',
+                      style: kActiveStyle,
+                    ),
+                  ),
+                  provider.allBooks.isEmpty
+                      ? emptyState("images/no_downloads.png")
+                      : Container(
+                          height: 240,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: provider.allBooks.length,
+                            itemBuilder: (context, index) {
+                              // cardKeys[index] = Key('cardKey$index');
+                              var bookInfo =
+                                  provider.allBooks[index]['bookInfo'];
+                              var id = provider.allBooks[index]['id'];
+                              return FlipCard(
+                                // key: cardKeys[index],
+                                front: BookCard(
+                                  imgHeight: 240,
+                                  imgWidth: 170,
+                                  imageLink: bookInfo['volumeInfo']
+                                      ['imageLinks']['smallThumbnail'],
+                                ),
+                                back: Card(
+                                  elevation: 4.0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(10.0),
+                                    ),
+                                  ),
+                                  child: Container(
+                                    height: 240,
+                                    width: 170,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        FlatButton(
+                                          onPressed: () {
+                                            openDetails(bookInfo);
+                                          },
+                                          child: Text('View Info'),
+                                        ),
+                                        FlatButton(
+                                            onPressed: () {
+                                              var path = provider
+                                                  .allBooks[index]['path'];
+                                              openBook(path, id);
+                                            },
+                                            child: Text('Read Now')),
+                                        FlatButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                  title: Text(
+                                                      'Delete ${bookInfo['volumeInfo']['title']}?'),
+                                                  actions: <Widget>[
+                                                    FlatButton(
+                                                      onPressed: () async {
+                                                        await provider
+                                                            .removeDownload(id);
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text('yes'),
+                                                    ),
+                                                    FlatButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                        // cardKeys[index].currentState.toggleCard();
+                                                      },
+                                                      child: Text('No'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                            child: Text('Delete'))
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
                             },
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  provider.currentlyReading['bookInfo']
-                                      ['volumeInfo']['authors'],
-                                  style: kSearchResultTextStyle,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  provider.currentlyReading['bookInfo']
-                                      ['volumeInfo']['title'],
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w900,
-                                    fontFamily: 'Kaushan Script',
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  provider.currentlyReading['bookInfo']
-                                      ['volumeInfo']['publishedDate'],
-                                  style: kSearchResultTextStyle,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  provider.currentlyReading['bookInfo']
-                                      ['volumeInfo']['description'],
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 4,
-                                  style: kSearchResultTextStyle,
-                                ),
-                                FlatButton(
-                                    color: kBlueAccent,
-                                    textColor: Colors.white,
-                                    onPressed: () {
-                                      var id = provider.currentlyReading['id'];
-                                      var path =
-                                          provider.currentlyReading['path'];
-                                      openBook(path, id);
-                                    },
-                                    child: Text(
-                                      'Read Now',
-                                      textAlign: TextAlign.start,
-                                    ))
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                SizedBox(height: 5),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    'Downloaded',
-                    style: kActiveStyle,
-                  ),
-                ),
-                provider.allBooks.isEmpty
-                    ? emptyState("images/no_downloads.png")
-                    : Container(
-                        height: 240,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: provider.allBooks.length,
-                          itemBuilder: (context, index) {
-                            // cardKeys[index] = Key('cardKey$index');
-                            var bookInfo = provider.allBooks[index]['bookInfo'];
-                            var id = provider.allBooks[index]['id'];
-                            return FlipCard(
-                              // key: cardKeys[index],
-                              front: BookCard(
-                                imgHeight: 240,
-                                imgWidth: 170,
-                                imageLink: bookInfo['volumeInfo']['imageLinks']
-                                    ['smallThumbnail'],
-                              ),
-                              back: Card(
-                                elevation: 4.0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.0),
-                                  ),
-                                ),
-                                child: Container(
-                                  height: 240,
-                                  width: 170,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: <Widget>[
-                                      FlatButton(
-                                        onPressed: () {
-                                          openDetails(bookInfo);
-                                        },
-                                        child: Text('View Info'),
-                                      ),
-                                      FlatButton(
-                                          onPressed: () {
-                                            var path = provider.allBooks[index]
-                                                ['path'];
-                                            openBook(path, id);
-                                          },
-                                          child: Text('Read Now')),
-                                      FlatButton(
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => AlertDialog(
-                                                title: Text(
-                                                    'Delete ${bookInfo['volumeInfo']['title']}?'),
-                                                actions: <Widget>[
-                                                  FlatButton(
-                                                    onPressed: () async {
-                                                      await provider
-                                                          .removeDownload(id);
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: Text('yes'),
-                                                  ),
-                                                  FlatButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                      // cardKeys[index].currentState.toggleCard();
-                                                    },
-                                                    child: Text('No'),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                          child: Text('Delete'))
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
                         ),
-                      ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    'Favourites',
-                    style: kActiveStyle,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      'Favourites',
+                      style: kActiveStyle,
+                    ),
                   ),
-                ),
-                provider.favourites.isEmpty
-                    ? emptyState("images/no_favourites.png")
-                    : Container(
-                        height: 240,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: provider.favourites.length,
-                          itemBuilder: (context, index) {
-                            var bookInfo =
-                                provider.favourites[index]['bookInfo'];
-                            var id = provider.favourites[index]['id'];
-                            return FlipCard(
-                              front: BookCard(
-                                imgHeight: 240,
-                                imgWidth: 170,
-                                imageLink: bookInfo['volumeInfo']['imageLinks']
-                                    ['smallThumbnail'],
-                              ),
-                              back: Card(
-                                elevation: 4.0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.0),
-                                  ),
+                  provider.favourites.isEmpty
+                      ? emptyState("images/no_favourites.png")
+                      : Container(
+                          height: 240,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: provider.favourites.length,
+                            itemBuilder: (context, index) {
+                              var bookInfo =
+                                  provider.favourites[index]['bookInfo'];
+                              var id = provider.favourites[index]['id'];
+                              return FlipCard(
+                                front: BookCard(
+                                  imgHeight: 240,
+                                  imgWidth: 170,
+                                  imageLink: bookInfo['volumeInfo']
+                                      ['imageLinks']['smallThumbnail'],
                                 ),
-                                child: Container(
-                                  height: 240,
-                                  width: 170,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: <Widget>[
-                                      GestureDetector(
-                                        onTap: () {
-                                          openDetails(bookInfo);
-                                        },
-                                        child: Text('View Info'),
-                                      ),
-                                      GestureDetector(
-                                          onTap: () {},
-                                          child: Text('Download')),
-                                      GestureDetector(
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => AlertDialog(
-                                                title: Text(
-                                                    'Remove "${bookInfo['volumeInfo']['title']}" from favourites?'),
-                                                actions: <Widget>[
-                                                  FlatButton(
-                                                    onPressed: () async {
-                                                      await provider
-                                                          .removeFavourite(id);
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: Text('yes'),
-                                                  ),
-                                                  FlatButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: Text('No'),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
+                                back: Card(
+                                  elevation: 4.0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(10.0),
+                                    ),
+                                  ),
+                                  child: Container(
+                                    height: 240,
+                                    width: 170,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        FlatButton(
+                                          onPressed: () {
+                                            openDetails(bookInfo);
                                           },
-                                          child: Text('Remove'))
-                                    ],
+                                          child: Text('View Info'),
+                                        ),
+                                        FlatButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                  title: Text(
+                                                      'Remove "${bookInfo['volumeInfo']['title']}" from favourites?'),
+                                                  actions: <Widget>[
+                                                    FlatButton(
+                                                      onPressed: () async {
+                                                        await provider
+                                                            .removeFavourite(
+                                                                id);
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text('yes'),
+                                                    ),
+                                                    FlatButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text('No'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                            child: Text('Remove'))
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
-                      ),
-              ],
+                ],
+              ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -386,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
             height: boxHeight,
             width: boxWidth,
             decoration: BoxDecoration(
-              color: kBlueAccent,
+              color: Theme.of(context).accentColor,
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             child: Center(
@@ -401,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('Tap to find a book'),
+                Text('Nothing is beign read'),
               ],
             ),
           ),

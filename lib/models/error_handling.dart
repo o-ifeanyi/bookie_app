@@ -12,22 +12,7 @@ class ErrorHandling {
 }
 
 var socketExceptionPage = Center(
-  child: Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: <Widget>[
-      Icon(
-        Icons.cloud_off,
-        color: Colors.black45,
-        size: 100,
-      ),
-      Text(
-        'Oops',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      Text('Please check your internet connection!'),
-      Text('Tap to retry'),
-    ],
-  ),
+  child: Image(image: AssetImage('images/connection_lost.png')),
 );
 
 class ErrorPage extends StatelessWidget {
