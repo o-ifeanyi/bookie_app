@@ -104,6 +104,22 @@ class ProviderClass extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> clearDownloads() async {
+    await dlDB.remove({});
+    await crDB.remove({});
+    allBooks.clear();
+    currentlyReading = null;
+    await getDownloadedBooks();
+    notifyListeners();
+  }
+
+  Future<void> clearFavourites() async {
+    await fvDB.remove({});
+    favourites.clear();
+    await getFavouriteBooks();
+    notifyListeners();
+  }
+
   Future<void> lastOpenedBook(var id) async {
     List currentItem = await crDB.listAll();
     if (currentItem.isNotEmpty) {

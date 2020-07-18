@@ -38,6 +38,7 @@ final kDarkTheme = ThemeData(
   backgroundColor: Color(0xFF212121),
   scaffoldBackgroundColor: Colors.black54,
   accentColor: Color(0xFF2296F3),
+  dividerColor: Colors.white54,
 );
 
 final kLightTheme = ThemeData(
@@ -47,5 +48,5 @@ final kLightTheme = ThemeData(
   backgroundColor: Color(0xFFE5E5E5),
   scaffoldBackgroundColor: Colors.white,
   accentColor: Color(0xFF2296F3),
-  dividerColor: Colors.white54,
+  dividerColor: Colors.black45,
 );

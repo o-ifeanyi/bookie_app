@@ -1,12 +1,10 @@
-import 'package:bookie/constants.dart';
 import 'package:bookie/models/provider.dart';
 import 'package:bookie/screens/search_screen.dart';
+import 'package:bookie/screens/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bookie/screens/home_screen.dart';
 import 'package:bookie/screens/store_screen.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MyHome extends StatefulWidget {
   @override
@@ -40,7 +38,7 @@ class _MyAppState extends State<MyHome> {
       builder: (context, provider, child) {
         return Scaffold(
           appBar: AppBar(
-            title: _selectedIndex == 0 ? Text('Home') : Text('Store'),
+            title: _selectedIndex == 0 ? Text('Home') : Text('Explore'),
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.search),
@@ -54,19 +52,14 @@ class _MyAppState extends State<MyHome> {
                 },
               ),
               IconButton(
-                icon: provider.getTheme() == kDarkTheme
-                    ? Icon(FontAwesome.lightbulb_o)
-                    : Icon(FontAwesome.moon_o),
-                onPressed: () async {
-                  if (provider.getTheme() == kDarkTheme) {
-                    Provider.of<ProviderClass>(context, listen: false)
-                        .setTheme(kLightTheme);
-                  } else {
-                    Provider.of<ProviderClass>(context, listen: false)
-                        .setTheme(kDarkTheme);
-                  }
-                  var pref = await SharedPreferences.getInstance();
-                  pref.setBool('theme', provider.getTheme() == kDarkTheme);
+                icon: Icon(Icons.settings),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SettingScreen(),
+                    ),
+                  );
                 },
               ),
             ],

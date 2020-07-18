@@ -1,10 +1,10 @@
 import 'package:bookie/components/book_card.dart';
+import 'package:bookie/components/home_list.dart';
 import 'package:bookie/components/rounded_button.dart';
 import 'package:bookie/constants.dart';
 import 'package:bookie/models/provider.dart';
 import 'package:bookie/screens/book_reader.dart';
 import 'package:bookie/screens/details_screen.dart';
-import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:provider/provider.dart';
@@ -60,13 +60,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // updateScreen();
+    updateScreen();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    updateScreen();
     return Consumer<ProviderClass>(
       builder: (context, provider, child) {
         return Scaffold(
@@ -146,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: kSearchResultTextStyle,
                                   ),
                                   RoundedButton(
-                                    colour: Theme.of(context).accentColor,
+                                      colour: Theme.of(context).accentColor,
                                       onPressed: () {
                                         var id =
                                             provider.currentlyReading['id'];
@@ -170,88 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   provider.allBooks.isEmpty
                       ? emptyState("images/no_downloads.png")
-                      : Container(
-                          height: 240,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: provider.allBooks.length,
-                            itemBuilder: (context, index) {
-                              // cardKeys[index] = Key('cardKey$index');
-                              var bookInfo =
-                                  provider.allBooks[index]['bookInfo'];
-                              var id = provider.allBooks[index]['id'];
-                              return FlipCard(
-                                // key: cardKeys[index],
-                                front: BookCard(
-                                  imgHeight: 240,
-                                  imgWidth: 170,
-                                  imageLink: bookInfo['volumeInfo']
-                                      ['imageLinks']['smallThumbnail'],
-                                ),
-                                back: Card(
-                                  elevation: 4.0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(10.0),
-                                    ),
-                                  ),
-                                  child: Container(
-                                    height: 240,
-                                    width: 170,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        FlatButton(
-                                          onPressed: () {
-                                            openDetails(bookInfo);
-                                          },
-                                          child: Text('View Info'),
-                                        ),
-                                        FlatButton(
-                                            onPressed: () {
-                                              var path = provider
-                                                  .allBooks[index]['path'];
-                                              openBook(path, id);
-                                            },
-                                            child: Text('Read Now')),
-                                        FlatButton(
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    AlertDialog(
-                                                  title: Text(
-                                                      'Delete ${bookInfo['volumeInfo']['title']}?'),
-                                                  actions: <Widget>[
-                                                    FlatButton(
-                                                      onPressed: () async {
-                                                        await provider
-                                                            .removeDownload(id);
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: Text('yes'),
-                                                    ),
-                                                    FlatButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                        // cardKeys[index].currentState.toggleCard();
-                                                      },
-                                                      child: Text('No'),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            },
-                                            child: Text('Delete'))
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                      : BuildHomeList(provider: provider, isDownload: true),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Text(
@@ -261,79 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   provider.favourites.isEmpty
                       ? emptyState("images/no_favourites.png")
-                      : Container(
-                          height: 240,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: provider.favourites.length,
-                            itemBuilder: (context, index) {
-                              var bookInfo =
-                                  provider.favourites[index]['bookInfo'];
-                              var id = provider.favourites[index]['id'];
-                              return FlipCard(
-                                front: BookCard(
-                                  imgHeight: 240,
-                                  imgWidth: 170,
-                                  imageLink: bookInfo['volumeInfo']
-                                      ['imageLinks']['smallThumbnail'],
-                                ),
-                                back: Card(
-                                  elevation: 4.0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(10.0),
-                                    ),
-                                  ),
-                                  child: Container(
-                                    height: 240,
-                                    width: 170,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        FlatButton(
-                                          onPressed: () {
-                                            openDetails(bookInfo);
-                                          },
-                                          child: Text('View Info'),
-                                        ),
-                                        FlatButton(
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    AlertDialog(
-                                                  title: Text(
-                                                      'Remove "${bookInfo['volumeInfo']['title']}" from favourites?'),
-                                                  actions: <Widget>[
-                                                    FlatButton(
-                                                      onPressed: () async {
-                                                        await provider
-                                                            .removeFavourite(
-                                                                id);
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: Text('yes'),
-                                                    ),
-                                                    FlatButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: Text('No'),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            },
-                                            child: Text('Remove'))
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                      : BuildHomeList(provider: provider, isDownload: false),
                 ],
               ),
             ),

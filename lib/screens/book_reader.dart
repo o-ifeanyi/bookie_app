@@ -4,7 +4,6 @@ import 'package:epub_view/epub_view.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'dart:io';
-
 import 'package:provider/provider.dart';
 
 class BookReader extends StatefulWidget {
@@ -31,9 +30,11 @@ class _BookReaderState extends State<BookReader> {
     _epubController = EpubController(
       // Future<Uint8List>
       data: loadBook(widget.bookPath),
-      // or pure Uint8List
-      // document: EpubReader.readBook(data),
+      epubCfi: 'epubcfi(/6/6[chapter-2]!/4/2/1612)',
     );
+    //doesnt work yet. suppose to resume from last position
+    final cfi = _epubController.generateEpubCfi();
+    _epubController.gotoEpubCfi(cfi);
     super.initState();
   }
 
@@ -42,6 +43,7 @@ class _BookReaderState extends State<BookReader> {
     return book.readAsBytesSync();
   }
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

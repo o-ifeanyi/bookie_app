@@ -109,9 +109,8 @@ class _HomeScreenState extends State<StoreScreen> {
       } catch (SocketException) {
         pageListNumber = 0;
         //look for a better way to stop snacbar from showing up everytime
-        if (tag == 'Romance' || tag == 'Fantasy') {
+        if (tag == 'Romance') {
           setState(() {
-            ErrorHandling.handleSocketException(context);
             loadingPage = Container(
               child: ErrorPage(() {
                 buildPageList(context, true);
