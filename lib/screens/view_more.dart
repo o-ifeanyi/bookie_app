@@ -1,5 +1,4 @@
 import 'package:bookie/models/free_books.dart';
-import 'package:bookie/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:bookie/components/grid_builder.dart';
@@ -93,19 +92,6 @@ class _ViewMoreState extends State<ViewMore> {
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text(widget.tag),
-          actions: <Widget>[
-            IconButton(
-                icon: Icon(
-                  Icons.search,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SearchScreen(),
-                      ));
-                })
-          ],
           bottom: TabBar(tabs: [
             Text(
               'New',

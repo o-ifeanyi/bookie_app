@@ -4,7 +4,6 @@ import 'package:bookie/models/get_books.dart';
 import 'package:bookie/screens/details_screen.dart';
 import 'package:bookie/components/book_card.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:progress_indicators/progress_indicators.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -17,11 +16,8 @@ class _SearchScreenState extends State<SearchScreen> {
   String dropdownValue = 'title';
   String _selection = 'title';
   String searchInput;
-  String displayText = 'Nothing to display';
   final searchFeildController = TextEditingController();
   var booksData;
-  final imagePlaceHolder =
-      'https://lh3.googleusercontent.com/proxy/u8TYJjSEp6IjX6HF2BqR2PmM68Zf6uG-l_DamX5vNfO-euliRz4vfeIJvHlp6CZ1B0EGCW3SXBTEyLjdu2poFM16m0Dr1rMt';
   static String imageLink;
   static String author;
   static String title;
@@ -29,59 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
   static String description;
   static int listLenght = 0;
 
-  void getBooksByTitle(title) async {
-    booksData = await getBooks.getTitleBooks(title);
-    getLenght(booksData);
-  }
-
-  void getBooksByAuthor(author) async {
-    booksData = await getBooks.getAuthorBooks(author);
-    getLenght(booksData);
-  }
-
-  void getBooksByPublisher(publisher) async {
-    booksData = await getBooks.getPublisherBooks(publisher);
-    getLenght(booksData);
-  }
-
-  void getLenght(data) {
-    try {
-      data['items'].forEach((book) => listLenght++);
-    } catch (e) {
-      booksData = null;
-      displayText = 'No result for\n"$searchInput"';
-      debugPrint(e.toString());
-    } finally {
-      dismissLoader();
-    }
-  }
-
-  void displayResult(data, index) {
-    var searchResultInfo = booksData['items'][index]['volumeInfo'];
-    try {
-      imageLink = searchResultInfo['imageLinks']['smallThumbnail'];
-    } catch (e) {
-      if (imageLink == null) {
-        imageLink = imagePlaceHolder;
-      }
-      print(e);
-    }
-    author = searchResultInfo['authors'][0] ?? 'Unavailable';
-    title = searchResultInfo['title'] ?? 'Unavailable';
-    publishDate = searchResultInfo['publishedDate'] ?? 'Unavailable';
-    description = searchResultInfo['description'] ?? 'Unavailable';
-  }
-
-  void showLoader() {
-    loading = true;
-    setState(() {});
-  }
-
-  void dismissLoader() {
-    loading = false;
-    setState(() {});
-  }
-
+  
   @override
   void initState() {
     super.initState();
@@ -92,14 +36,8 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       body: LoadingOverlay(
         isLoading: loading,
-        opacity: 0.1,
-        progressIndicator: GlowingProgressIndicator(
-          child: Icon(
-            Icons.book,
-            color: Theme.of(context).accentColor,
-            size: 50,
-          ),
-        ),
+        opacity: 0.6,
+        progressIndicator: SizedBox.shrink(),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -107,21 +45,8 @@ class _SearchScreenState extends State<SearchScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1,
-                      ),
-                      borderRadius: BorderRadius.circular(30)),
                   child: Row(
                     children: <Widget>[
-                      IconButton(
-                        icon: Icon(
-                          Icons.arrow_back,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
                       Expanded(
                         child: Container(
                           height: 50,
@@ -134,6 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               prefixIcon: PopupMenuButton<String>(
+                                icon: Icon(Icons.tune),
                                 onSelected: (String newValue) {
                                   setState(() {
                                     _selection = newValue;
@@ -159,44 +85,34 @@ class _SearchScreenState extends State<SearchScreen> {
                                   icon: Icon(Icons.clear),
                                   onPressed: () {
                                     searchFeildController.clear();
+                                    setState(() {
+                                      booksData = null;
+                                    });
                                   }),
                               hintText: 'Search by title or author',
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).accentColor,
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(30),
-                            bottomRight: Radius.circular(30),
-                          ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.search,
                         ),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.search,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              displayText = '';
-                            });
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            if (_selection == 'title' && searchInput != null) {
-                              showLoader();
-                              getBooksByTitle(searchInput);
-                            } else if (_selection == 'author' &&
-                                searchInput != null) {
-                              showLoader();
-                              getBooksByAuthor(searchInput);
-                            } else if (_selection == 'publ' &&
-                                searchInput != null) {
-                              showLoader();
-                              getBooksByPublisher(searchInput);
-                            }
-                          },
-                        ),
+                        onPressed: () {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          if (_selection == 'title' && searchInput != null) {
+                            showLoader();
+                            getBooksByTitle(searchInput);
+                          } else if (_selection == 'author' &&
+                              searchInput != null) {
+                            showLoader();
+                            getBooksByAuthor(searchInput);
+                          } else if (_selection == 'publ' &&
+                              searchInput != null) {
+                            showLoader();
+                            getBooksByPublisher(searchInput);
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -204,10 +120,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 booksData == null
                     ? Expanded(
                         child: Center(
-                          child: Text(
-                            displayText,
-                            textAlign: TextAlign.center,
-                            style: kCursiveHeading,
+                          child: Image(
+                            image: AssetImage('images/no_search.png'),
                           ),
                         ),
                       )
@@ -236,7 +150,6 @@ class _SearchScreenState extends State<SearchScreen> {
                               child: Card(
                                 elevation: 6.0,
                                 margin: EdgeInsets.symmetric(vertical: 10),
-                                color: Color(0xFFFAFAFA),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
@@ -303,4 +216,80 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
+
+  void snackBar() {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Network currently unavailable'),
+      ),
+    );
+  }
+
+  void getBooksByTitle(title) async {
+    try {
+      booksData = await getBooks.getTitleBooks(title);
+      getLenght(booksData);
+    } catch (SocketException) {
+      snackBar();
+    } finally {
+      dismissLoader();
+    }
+  }
+
+  void getBooksByAuthor(author) async {
+    try {
+      booksData = await getBooks.getAuthorBooks(author);
+      getLenght(booksData);
+    } catch (SocketException) {
+      snackBar();
+    } finally {
+      dismissLoader();
+    }
+  }
+
+  void getBooksByPublisher(publisher) async {
+    try {
+      booksData = await getBooks.getPublisherBooks(publisher);
+      getLenght(booksData);
+    } catch (SocketException) {
+      snackBar();
+    } finally {
+      dismissLoader();
+    }
+  }
+
+  void getLenght(data) {
+    try {
+      data['items'].forEach((book) => listLenght++);
+    } catch (e) {
+      booksData = null;
+      debugPrint(e.toString());
+    } finally {
+      dismissLoader();
+    }
+  }
+
+  void displayResult(data, index) {
+    var searchResultInfo = booksData['items'][index]['volumeInfo'];
+    try {
+      imageLink = searchResultInfo['imageLinks']['smallThumbnail'];
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    author = searchResultInfo['authors'][0] ?? 'Unavailable';
+    title = searchResultInfo['title'] ?? 'Unavailable';
+    publishDate = searchResultInfo['publishedDate'] ?? 'Unavailable';
+    description = searchResultInfo['description'] ?? 'Unavailable';
+  }
+
+  void showLoader() {
+    loading = true;
+    setState(() {});
+  }
+
+  void dismissLoader() {
+    loading = false;
+    setState(() {});
+  }
+
 }

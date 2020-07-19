@@ -8,7 +8,6 @@ class GridBuilder extends StatelessWidget {
     @required this.lenght,
   });
 
-  final String imagePlaceHolder = 'https://lh3.googleusercontent.com/proxy/u8TYJjSEp6IjX6HF2BqR2PmM68Zf6uG-l_DamX5vNfO-euliRz4vfeIJvHlp6CZ1B0EGCW3SXBTEyLjdu2poFM16m0Dr1rMt';
   final dynamic data;
   final int lenght;
 
@@ -16,7 +15,7 @@ class GridBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
         shrinkWrap: true,
-        itemCount: lenght > 9 ? 9 : lenght,
+        itemCount: lenght,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           mainAxisSpacing: 5,
@@ -34,9 +33,7 @@ class GridBuilder extends StatelessWidget {
             imageLink = data['items'][index]['volumeInfo']['imageLinks']
                 ['smallThumbnail'];
           } catch (e) {
-            if (imageLink == null) {
-              imageLink = imagePlaceHolder;
-            }
+            debugPrint(e.toString());
           }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

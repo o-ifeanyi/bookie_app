@@ -143,11 +143,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   void initState() {
-    isAlreadyDownloaded();
     super.initState();
     displayResult(widget.bookToDisplay);
     category = getCategory(categories);
     getMoreData();
+    isAlreadyDownloaded();
   }
 
   @override
@@ -170,14 +170,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back),
-          iconSize: 30,
         ),
-        actions: <Widget>[
-          Icon(
-            Icons.more_horiz,
-            size: 30,
-          ),
-        ],
       ),
       body: Container(
         padding: const EdgeInsets.only(left: 15, right: 10),

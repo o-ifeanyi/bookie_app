@@ -6,7 +6,6 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:bookie/screens/view_more.dart';
 import 'package:bookie/components/list_builder.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-
 import 'package:provider/provider.dart';
 
 class StoreScreen extends StatefulWidget {
@@ -26,13 +25,13 @@ class _HomeScreenState extends State<StoreScreen> {
 
   final Map<String, String> bookTags = {
     'Romance': 'Feel the passion',
-    'Drama': 'Engross yourself',
-    'History': 'Revisit history',
-    'Action': 'Live the action',
-    'Art': 'Experience art',
-    'Mystery': 'So mysterious',
-    'Horror': 'Shivers',
-    'Fantasy': 'Wish on',
+    // 'Drama': 'Engross yourself',
+    // 'History': 'Revisit history',
+    // 'Action': 'Live the action',
+    // 'Art': 'Experience art',
+    // 'Mystery': 'So mysterious',
+    // 'Horror': 'Shivers',
+    // 'Fantasy': 'Wish on',
   };
   num pageListNumber = 0;
   bool pageIsEmpty = true;
@@ -47,7 +46,11 @@ class _HomeScreenState extends State<StoreScreen> {
       loadingPage = Container(
         child: Center(
           child: GlowingProgressIndicator(
-            child: Icon(Icons.book, size: 50, color: Color(0xFF2296F3),),
+            child: Icon(
+              Icons.book,
+              size: 50,
+              color: Color(0xFF2296F3),
+            ),
           ),
         ),
       );
@@ -110,9 +113,14 @@ class _HomeScreenState extends State<StoreScreen> {
         pageListNumber = 0;
         //look for a better way to stop snacbar from showing up everytime
         if (tag == 'Romance') {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Network currently unavailable'),
+            ),
+          );
           setState(() {
             loadingPage = Container(
-              child: ErrorPage(() {
+              child: ErrorPage(onPressed: () {
                 buildPageList(context, true);
               }),
             );
@@ -137,7 +145,11 @@ class _HomeScreenState extends State<StoreScreen> {
   var loadingPage = Container(
     child: Center(
       child: GlowingProgressIndicator(
-        child: Icon(Icons.book, size: 50, color: Color(0xFF2296F3),),
+        child: Icon(
+          Icons.book,
+          size: 50,
+          color: Color(0xFF2296F3),
+        ),
       ),
     ),
   );

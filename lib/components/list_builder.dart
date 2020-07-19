@@ -9,7 +9,6 @@ class ListBuilder extends StatelessWidget {
   });
 
   final dynamic data;
-  final String imagePlaceHolder = 'https://lh3.googleusercontent.com/proxy/u8TYJjSEp6IjX6HF2BqR2PmM68Zf6uG-l_DamX5vNfO-euliRz4vfeIJvHlp6CZ1B0EGCW3SXBTEyLjdu2poFM16m0Dr1rMt';
   final int listLenght;
 
   @override
@@ -22,9 +21,7 @@ class ListBuilder extends StatelessWidget {
           imageLink = data['items'][index]['volumeInfo']
               ['imageLinks']['smallThumbnail'];
         } catch (e) {
-          if (imageLink == null) {
-            imageLink = imagePlaceHolder;
-          }
+          debugPrint(e.toString());
         }
 
         return BookCard(
@@ -44,7 +41,7 @@ class ListBuilder extends StatelessWidget {
           },
         );
       },
-      itemCount: listLenght,
+      itemCount: listLenght > 10 ? 10 : listLenght,
       scrollDirection: Axis.horizontal,
     );
   }

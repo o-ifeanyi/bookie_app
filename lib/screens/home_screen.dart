@@ -193,7 +193,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       height: 200,
       decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(image), fit: BoxFit.cover)),
+        image: DecorationImage(
+          image: AssetImage(image),
+        ),
+      ),
     );
   }
 

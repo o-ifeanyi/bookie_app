@@ -16,15 +16,10 @@ class _SettingScreenState extends State<SettingScreen> {
     return Consumer<ProviderClass>(
       builder: (context, provider, child) {
         return Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
           body: Column(
             children: <Widget>[
               SwitchListTile(
+                activeColor: Theme.of(context).accentColor,
                 title: Row(
                   children: <Widget>[
                     provider.getTheme() == kDarkTheme

@@ -15,6 +15,8 @@ class _MyAppState extends State<MyHome> {
   static List<Widget> _screenOptions = [
     HomeScreen(),
     StoreScreen(),
+    SearchScreen(),
+    SettingScreen(),
   ];
 
   static int _selectedIndex = 0;
@@ -32,37 +34,34 @@ class _MyAppState extends State<MyHome> {
     );
   }
 
+  String getTitle(int index) {
+    switch (index) {
+      case 0:
+        return 'Home';
+        break;
+      case 1:
+        return 'Explore';
+        break;
+      case 2:
+        return 'Search';
+        break;
+      case 3:
+        return 'Setting';
+        break;
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ProviderClass>(
       builder: (context, provider, child) {
         return Scaffold(
           appBar: AppBar(
-            title: _selectedIndex == 0 ? Text('Home') : Text('Explore'),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SearchScreen(),
-                    ),
-                  );
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.settings),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SettingScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
+            title: Text(
+              getTitle(_selectedIndex),
+            ),
           ),
           body: IndexedStack(
             children: _screenOptions,
@@ -70,10 +69,14 @@ class _MyAppState extends State<MyHome> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             selectedItemColor: Theme.of(context).accentColor,
+            unselectedItemColor: Colors.black54,
             items: <BottomNavigationBarItem>[
               buildBottomNavigationBarItem(title: 'Home', icon: Icons.home),
               buildBottomNavigationBarItem(
                   title: 'Explore', icon: Icons.explore),
+              buildBottomNavigationBarItem(title: 'Search', icon: Icons.search),
+              buildBottomNavigationBarItem(
+                  title: 'Settings', icon: Icons.settings),
             ],
             currentIndex: _selectedIndex,
             onTap: (int index) {
