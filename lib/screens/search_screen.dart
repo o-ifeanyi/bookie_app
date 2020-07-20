@@ -25,12 +25,6 @@ class _SearchScreenState extends State<SearchScreen> {
   static String description;
   static int listLenght = 0;
 
-  
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,6 +80,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   onPressed: () {
                                     searchFeildController.clear();
                                     setState(() {
+                                      searchInput = null;
                                       booksData = null;
                                     });
                                   }),
@@ -103,14 +98,20 @@ class _SearchScreenState extends State<SearchScreen> {
                           if (_selection == 'title' && searchInput != null) {
                             showLoader();
                             getBooksByTitle(searchInput);
+                            searchInput = null;
+                            searchFeildController.clear();
                           } else if (_selection == 'author' &&
                               searchInput != null) {
                             showLoader();
                             getBooksByAuthor(searchInput);
+                            searchInput = null;
+                            searchFeildController.clear();
                           } else if (_selection == 'publ' &&
                               searchInput != null) {
                             showLoader();
                             getBooksByPublisher(searchInput);
+                            searchInput = null;
+                            searchFeildController.clear();
                           }
                         },
                       ),
@@ -119,12 +120,14 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 booksData == null
                     ? Expanded(
-                        child: Center(
-                          child: Image(
-                            image: AssetImage('images/no_search.png'),
+                      child: Container(
+                          child: Center(
+                            child: Image(
+                              image: AssetImage('images/no_search.png'),
+                            ),
                           ),
                         ),
-                      )
+                    )
                     : Expanded(
                         child: ListView.builder(
                           itemCount: listLenght,

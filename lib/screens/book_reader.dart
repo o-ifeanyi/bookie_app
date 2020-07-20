@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BookReader extends StatefulWidget {
   final bookPath;
@@ -26,15 +27,12 @@ class _BookReaderState extends State<BookReader> {
 
   @override
   void initState() {
-    Provider.of<ProviderClass>(context, listen: false).lastOpenedBook(widget.id);
+    Provider.of<ProviderClass>(context, listen: false)
+        .lastOpenedBook(widget.id);
     _epubController = EpubController(
       // Future<Uint8List>
       data: loadBook(widget.bookPath),
-      epubCfi: 'epubcfi(/6/6[chapter-2]!/4/2/1612)',
     );
-    //doesnt work yet. suppose to resume from last position
-    final cfi = _epubController.generateEpubCfi();
-    _epubController.gotoEpubCfi(cfi);
     super.initState();
   }
 
@@ -43,9 +41,31 @@ class _BookReaderState extends State<BookReader> {
     return book.readAsBytesSync();
   }
 
-  
+  void resumeFromLastPosition() {
+    SharedPreferences.getInstance().then((pref) {
+      var cfi = pref.getString(widget.id) ?? null;
+      _epubController.gotoEpubCfi(cfi);
+    });
+  }
+
+  void saveLastPosition() {
+    final cfi = _epubController.generateEpubCfi();
+    if (cfi != null) {
+      SharedPreferences.getInstance().then((pref) {
+        pref.setString(widget.id, cfi);
+      });
+    }
+  }
+
+  @override
+  void deactivate() {
+    saveLastPosition();
+    super.deactivate();
+  }
+
   @override
   Widget build(BuildContext context) {
+    resumeFromLastPosition();
     return Scaffold(
       appBar: AppBar(
         // Show actual chapter name
@@ -62,7 +82,8 @@ class _BookReaderState extends State<BookReader> {
         child: Drawer(
           child: EpubReaderTableOfContents(
             loader: GlowingProgressIndicator(
-              child: Icon(Icons.book, size: 40, color: Theme.of(context).accentColor),
+              child: Icon(Icons.book,
+                  size: 40, color: Theme.of(context).accentColor),
             ),
             controller: _epubController,
           ),

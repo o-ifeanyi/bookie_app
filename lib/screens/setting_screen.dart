@@ -108,6 +108,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         return AboutDialog(
                           applicationName: 'Bookie',
                           applicationVersion: '1.0',
+                          applicationIcon: Image(image: AssetImage('images/logo.png')),
                         );
                       });
                 },
