@@ -25,13 +25,13 @@ class _HomeScreenState extends State<StoreScreen> {
 
   final Map<String, String> bookTags = {
     'Romance': 'Feel the passion',
-    // 'Drama': 'Engross yourself',
-    // 'History': 'Revisit history',
-    // 'Action': 'Live the action',
-    // 'Art': 'Experience art',
-    // 'Mystery': 'So mysterious',
-    // 'Horror': 'Shivers',
-    // 'Fantasy': 'Wish on',
+    'Drama': 'Engross yourself',
+    'History': 'Revisit history',
+    'Action': 'Live the action',
+    'Art': 'Greatest arts',
+    'Mystery': 'So mysterious',
+    'Horror': 'Scary enough?',
+    'Fantasy': 'Fantasy',
   };
   num pageListNumber = 0;
   bool pageIsEmpty = true;
@@ -133,7 +133,9 @@ class _HomeScreenState extends State<StoreScreen> {
   @override
   void initState() {
     super.initState();
-    buildPageList(context, true);
+    if (Provider.of<ProviderClass>(context, listen: false).pageListWidget.isEmpty) {
+      buildPageList(context, true);
+    }
   }
 
   Future<void> refresh() {

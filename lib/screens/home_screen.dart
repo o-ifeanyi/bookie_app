@@ -224,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('Nothing is beign read'),
+                Text('Nothing is being read'),
               ],
             ),
           ),

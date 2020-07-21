@@ -25,6 +25,81 @@ class _SearchScreenState extends State<SearchScreen> {
   static String description;
   static int listLenght = 0;
 
+  void snackBar() {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Network currently unavailable'),
+      ),
+    );
+  }
+
+  void getBooksByTitle(title) async {
+    try {
+      booksData = await getBooks.getTitleBooks(title);
+      getLenght(booksData);
+    } catch (SocketException) {
+      snackBar();
+    } finally {
+      dismissLoader();
+    }
+  }
+
+  void getBooksByAuthor(author) async {
+    try {
+      booksData = await getBooks.getAuthorBooks(author);
+      getLenght(booksData);
+    } catch (SocketException) {
+      snackBar();
+    } finally {
+      dismissLoader();
+    }
+  }
+
+  void getBooksByPublisher(publisher) async {
+    try {
+      booksData = await getBooks.getPublisherBooks(publisher);
+      getLenght(booksData);
+    } catch (SocketException) {
+      snackBar();
+    } finally {
+      dismissLoader();
+    }
+  }
+
+  void getLenght(data) {
+    try {
+      data['items'].forEach((book) => listLenght++);
+    } catch (e) {
+      booksData = null;
+      debugPrint(e.toString());
+    } finally {
+      dismissLoader();
+    }
+  }
+
+  void displayResult(data, index) {
+    var searchResultInfo = booksData['items'][index]['volumeInfo'];
+    try {
+      imageLink = searchResultInfo['imageLinks']['smallThumbnail'];
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    author = searchResultInfo['authors'][0] ?? 'Unavailable';
+    title = searchResultInfo['title'] ?? 'Unavailable';
+    publishDate = searchResultInfo['publishedDate'] ?? 'Unavailable';
+    description = searchResultInfo['description'] ?? 'Unavailable';
+  }
+
+  void showLoader() {
+    loading = true;
+    setState(() {});
+  }
+
+  void dismissLoader() {
+    loading = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -219,80 +294,4 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
-
-  void snackBar() {
-    Scaffold.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Network currently unavailable'),
-      ),
-    );
-  }
-
-  void getBooksByTitle(title) async {
-    try {
-      booksData = await getBooks.getTitleBooks(title);
-      getLenght(booksData);
-    } catch (SocketException) {
-      snackBar();
-    } finally {
-      dismissLoader();
-    }
-  }
-
-  void getBooksByAuthor(author) async {
-    try {
-      booksData = await getBooks.getAuthorBooks(author);
-      getLenght(booksData);
-    } catch (SocketException) {
-      snackBar();
-    } finally {
-      dismissLoader();
-    }
-  }
-
-  void getBooksByPublisher(publisher) async {
-    try {
-      booksData = await getBooks.getPublisherBooks(publisher);
-      getLenght(booksData);
-    } catch (SocketException) {
-      snackBar();
-    } finally {
-      dismissLoader();
-    }
-  }
-
-  void getLenght(data) {
-    try {
-      data['items'].forEach((book) => listLenght++);
-    } catch (e) {
-      booksData = null;
-      debugPrint(e.toString());
-    } finally {
-      dismissLoader();
-    }
-  }
-
-  void displayResult(data, index) {
-    var searchResultInfo = booksData['items'][index]['volumeInfo'];
-    try {
-      imageLink = searchResultInfo['imageLinks']['smallThumbnail'];
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-    author = searchResultInfo['authors'][0] ?? 'Unavailable';
-    title = searchResultInfo['title'] ?? 'Unavailable';
-    publishDate = searchResultInfo['publishedDate'] ?? 'Unavailable';
-    description = searchResultInfo['description'] ?? 'Unavailable';
-  }
-
-  void showLoader() {
-    loading = true;
-    setState(() {});
-  }
-
-  void dismissLoader() {
-    loading = false;
-    setState(() {});
-  }
-
 }

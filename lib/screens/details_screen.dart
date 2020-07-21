@@ -30,8 +30,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final imagePlaceHolder =
-      'https://lh3.googleusercontent.com/proxy/u8TYJjSEp6IjX6HF2BqR2PmM68Zf6uG-l_DamX5vNfO-euliRz4vfeIJvHlp6CZ1B0EGCW3SXBTEyLjdu2poFM16m0Dr1rMt';
   String imageLink;
   var id;
   var author; //some come as single strings and not list
@@ -40,7 +38,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
   String publisher;
   String description;
   var categories;
-  var pageCount;
   String category;
   num rating;
   String downloadLink;
@@ -49,7 +46,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
   int listLenght = 0;
   String seeMore = 'View more';
   bool bookIsDownloaded = false;
-  var displayBookDatabase;
 
   void getMoreData() async {
     try {
@@ -60,6 +56,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
         moreFromAuthorData['items'].forEach((book) => listLenght++);
       }
     } catch (e) {
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text('Unable to get more books from $author'),
+        ),
+      );
       debugPrint(e.toString());
     }
   }
@@ -69,10 +70,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     try {
       imageLink = displayInfo['imageLinks']['smallThumbnail'];
     } catch (e) {
-      if (imageLink == null) {
-        imageLink = imagePlaceHolder;
-      }
-      print(e);
+      debugPrint(e.toString());
     }
     id = data['id'];
     author = displayInfo['authors'] ?? 'Unavailable';
@@ -82,7 +80,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
     publisher = displayInfo['publisher'] ?? 'Unavailable';
     description = displayInfo['description'] ?? 'Unavailable';
     categories = displayInfo['categories'] ?? 'Unavailable';
-    pageCount = displayInfo['pageCount'] ?? 'Unavailable';
     rating = displayInfo['averageRating'];
     downloadLink = data['accessInfo']['epub']['downloadLink'];
   }
@@ -154,12 +151,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
   void dispose() {
     super.dispose();
     moreFromAuthorData = null;
-    displayBookDatabase = null;
     bookIsDownloaded = false;
   }
 
-  IconData addBook = Icons.library_add;
-  IconData like = Icons.favorite_border;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -206,7 +200,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         getRating(rating),
                         SizedBox(height: 5),
                         Text(
-                          'By $author\nPublish Date: $publishDate\nPublisher: $publisher\nCategory: $category\nPages: $pageCount',
+                          'By $author\nPublish Date: $publishDate\nPublisher: $publisher\nCategory: $category',
                           overflow: TextOverflow.fade,
                           style: kSearchResultTextStyle,
                         ),
@@ -226,8 +220,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
             Text(
               description,
               textAlign: TextAlign.center,
-              maxLines: descriptonMaxLines,
               softWrap: true,
+              maxLines: descriptonMaxLines,
               overflow: TextOverflow.fade,
               style: TextStyle(fontFamily: 'Source Sans Pro', fontSize: 16),
             ),
@@ -325,7 +319,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               SnackBar(
                                 duration: Duration(seconds: 5),
                                 backgroundColor: Colors.red,
-                                content: Text('Could not download'),
+                                content: Text('Download failed'),
                               ),
                             );
                           }
@@ -347,8 +341,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     var id = widget.bookToDisplay['id'];
                     if (provider.isFavourite) {
                       await provider.removeFavourite(id);
+                      _scaffoldKey.currentState.showSnackBar(
+                        SnackBar(
+                          content: Text('$title removed from favourites'),
+                        ),
+                      );
                     } else {
                       await provider.addToFavourites(id, widget.bookToDisplay);
+                      _scaffoldKey.currentState.showSnackBar(
+                        SnackBar(
+                          content: Text('$title added to favourites'),
+                        ),
+                      );
                     }
                     isAlreadyDownloaded();
                   }),

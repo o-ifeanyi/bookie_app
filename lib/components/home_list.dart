@@ -85,8 +85,8 @@ class BuildHomeList extends StatelessWidget {
                             context: context,
                             builder: (context) => AlertDialog(
                               title: Text(isDownload
-                                  ? 'Delete ${bookInfo['volumeInfo']['title']}?'
-                                  : 'Remove ${bookInfo['volumeInfo']['title']}?'),
+                                  ? 'Delete "${bookInfo['volumeInfo']['title']}" from downloads?'
+                                  : 'Remove "${bookInfo['volumeInfo']['title']}" from favourites?'),
                               actions: <Widget>[
                                 FlatButton(
                                   onPressed: () async {

@@ -30,6 +30,7 @@
 .pub/
 /build/
 /android/app/google-services.json
+/android/app/key.jks
 /lib/models/secrets.dart
 
 # Web related

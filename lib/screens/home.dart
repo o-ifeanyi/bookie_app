@@ -53,6 +53,18 @@ class _MyAppState extends State<MyHome> {
     }
   }
 
+  //closes the app if current screen is the home screen else it returns to home screen
+  Future<bool> close() {
+    if (_selectedIndex == 0) {
+      return Future.value(true);
+    } else {
+      setState(() {
+        _selectedIndex = 0;
+      });
+      return Future.value(false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ProviderClass>(
@@ -63,9 +75,14 @@ class _MyAppState extends State<MyHome> {
               getTitle(_selectedIndex),
             ),
           ),
-          body: IndexedStack(
-            children: _screenOptions,
-            index: _selectedIndex,
+          body: WillPopScope(
+            onWillPop: () {
+              return close();
+            },
+            child: IndexedStack(
+              children: _screenOptions,
+              index: _selectedIndex,
+            ),
           ),
           bottomNavigationBar: BottomNavigationBar(
             selectedItemColor: Theme.of(context).accentColor,
