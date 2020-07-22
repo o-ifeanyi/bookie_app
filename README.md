@@ -1,3 +1,5 @@
+<img src="images/logo.png" width="100">
+
 # 📖📖 Bookie [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 A simple Flutter app to Read and Download books.
