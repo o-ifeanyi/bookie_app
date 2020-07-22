@@ -1,16 +1,42 @@
-# bookie
+# 📖📖 Bookie [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-A new Flutter project.
+A simple Flutter app to Read and Download books.
+The Books included in the app are from the [Public Domain](https://en.wikipedia.org/wiki/Public_domain) (Expired Copyright and completely free).
 
-## Getting Started
+<a href="https://play.google.com/store/apps/details?id=com.onuifeanyi.bookie"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"></img></a>
+<br>
+Please star⭐ the repo if you like what you see😉.
 
-This project is a starting point for a Flutter application.
+## 💻 Requirements
+* Any Operating System (ie. MacOS X, Linux, Windows)
+* Any IDE with Flutter SDK installed (ie. IntelliJ, Android Studio, VSCode etc)
+* A little knowledge of Dart and Flutter
 
-A few resources to get you started if this is your first Flutter project:
+## ✨ Features
+- [x] Download eBooks.
+- [x] Read eBooks.
+- [x] Dark Mode.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## 📸 ScreenShots
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+| Light| Dark|
+|------|-------|
+|<img src="ss/light1.png" width="400">|<img src="ss/dark1.png" width="400">|
+|<img src="ss/light2.png" width="400">|<img src="ss/dark2.png" width="400">|
+|<img src="ss/light3.png" width="400">|<img src="ss/dark3.png" width="400">|
+|<img src="ss/light4.png" width="400">|<img src="ss/dark4.png" width="400">|
+
+
+## 🔌 Plugins
+| Name | Usage |
+|------|-------|
+|[**Provider**](https://pub.dev/packages/provider)| State Management|
+|[**Object DB**](https://pub.dev/packages/objectdb)| NoSQL database to store Favorites & Downloads|
+|[**Xml2Json**](https://pub.dev/packages/xml2json)| Convert XML to JSON|
+|[**Dio**](https://pub.dev/packages/dio)| Network calls and File Download|
+|[**Http**](https://pub.dev/packages/http)| Network calls|
+|[**EPub View**](https://pub.dev/packages/epub_view)| A flutter plugin to read ePub files|
+
+
+## 🤓 Author(s)
+**Onuoha ifeanyi.**  <a href="https://twitter.com/onuoha_ifeanyi">Follow me</a> on Twitter.
