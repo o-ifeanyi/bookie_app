@@ -1,6 +1,4 @@
-<img src="ss/ls.png" width="400">
-
-<br>
+![Image](ss/ls.png)
 
 # 📖📖 Bookie [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
@@ -10,6 +8,10 @@ The Books included in the app are from the [Public Domain](https://en.wikipedia.
 <a href="https://play.google.com/store/apps/details?id=com.onuifeanyi.bookie"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"></img></a>
 <br>
 Please star⭐ the repo if you like what you see😉.
+<br>
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/onuoha_ifeanyi.svg?style=social)](https://twitter.com/onuoha_ifeanyi)
+<br>
 
 ## 💻 Requirements
 * Any Operating System (ie. MacOS X, Linux, Windows)
@@ -43,4 +45,4 @@ Please star⭐ the repo if you like what you see😉.
 
 
 ## 🤓 Author(s)
-**Onuoha ifeanyi.**  <a href="https://twitter.com/onuoha_ifeanyi">Follow me</a> on Twitter.
+**Onuoha ifeanyi.** [![Twitter Follow](https://img.shields.io/twitter/follow/onuoha_ifeanyi.svg?style=social)](https://twitter.com/onuoha_ifeanyi)
