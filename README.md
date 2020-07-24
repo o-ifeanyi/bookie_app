@@ -1,4 +1,4 @@
-<img src="images/logo.png" width="100">
+<img src="ss/ls.png" width="400">
 
 # 📖📖 Bookie [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
